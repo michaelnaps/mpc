@@ -8,14 +8,14 @@ import math
 import time
 import pickle
 
-class system:
-    def __init__(self, solver, costFunction, modelFunction, user_inputs,
+class ModelPredictiveControl:
+    def __init__(self, solver, costFunction, modelFunction, user_params,
                  num_inputs, num_ssvar, PH_length=1, knot_length=1, time_step=0.025,
                  appx_zero=1e-6, step_size=1e-3, max_iter=10):
         self.solver = solver;
         self.cost   = costFunction;
         self.model  = modelFunction;
-        self.inputs = user_inputs;
+        self.params = user_params;
         self.u_num  = num_inputs;
         self.q_num  = num_ssvar;
         self.PH     = PH_length;
@@ -32,7 +32,7 @@ class system:
         self._a_method = 'none';
 
     def setModelInputs(self, user_inputs):
-        self.inputs = user_inputs;
+        self.params = user_inputs;
         return 1;
 
     def setMinTimeStep(self, min_time_step):
@@ -76,12 +76,12 @@ class system:
         P      = self.PH;
         eps    = self.zero;
         imax   = self.n_max;
-        inputs = self.inputs;
+        params = self.params;
 
         # loop variable setup
         uc = uinit;
         q  = self.simulate(q0, uc);
-        Cc = self.cost(self, q, uc, inputs);
+        Cc = self.cost(self, q, uc, params);
         un = uc;  Cn = Cc;
 
         if output:
@@ -109,7 +109,7 @@ class system:
 
             # simulate and calculate the new cost value
             q  = self.simulate(q0, un);
-            Cn = self.cost(self, q, un, inputs);
+            Cn = self.cost(self, q, un, params);
             count += 1;  # iterate the loop counter
 
             if (np.isnan(Cn)):
@@ -140,7 +140,7 @@ class system:
         P      = self.PH;
         eps    = self.zero;
         imax   = self.n_max;
-        inputs = self.inputs;
+        params = self.params;
 
         # step size coefficient choice
         alpha = self._alpha;
@@ -149,7 +149,7 @@ class system:
         # loop variable setup
         uc = uinit;
         q  = self.simulate(q0, uc);
-        Cc = self.cost(self, q, uc, inputs);
+        Cc = self.cost(self, q, uc, params);
         un = uc;  Cn = Cc;
 
         if output:
@@ -174,7 +174,7 @@ class system:
             else:
                 un = [uc[i] - alpha*g[i] for i in range(P*N)];
                 q  = self.simulate(q0, un);
-                Cn = self.cost(self, q, un, inputs);
+                Cn = self.cost(self, q, un, params);
 
             count += 1;  # iterate the loop counter
 
@@ -209,7 +209,7 @@ class system:
         N = self.u_num*self.PH;
         h = self.h;
         g = [0 for i in range(N)];
-        inputs = self.inputs;
+        params = self.params;
 
         for i in range(rownum-1, N):
             un1 = [u[j] - (i==j)*h for j in range(N)];
@@ -218,8 +218,8 @@ class system:
             qn1 = self.simulate(q0, un1);
             qp1 = self.simulate(q0, up1);
 
-            Cn1 = self.cost(self, qn1, un1, inputs);
-            Cp1 = self.cost(self, qp1, up1, inputs);
+            Cn1 = self.cost(self, qn1, un1, params);
+            Cp1 = self.cost(self, qp1, up1, params);
 
             g[i] = (Cp1 - Cn1)/(2*h);
 
@@ -251,14 +251,14 @@ class system:
         eps = self.zero;
         a = self._alpha;
         w = self._bkl_shrink;
-        inputs = self.inputs;
+        params = self.params;
 
         count = 0;
         brk = -1;
         while ((count != 1000) & (a > eps)):
             ubkl = [uc[i] - a*g[i] for i in range(P*N)];
             q  = self.simulate(q0, ubkl);
-            Cbkl = self.cost(self, q, ubkl, inputs);
+            Cbkl = self.cost(self, q, ubkl, params);
             count += 1;
 
             if (Cbkl < C):
@@ -292,7 +292,7 @@ class system:
         P  = self.PH;
         dt = self.dt;
         dt_min = self._dt_min;
-        inputs = self.inputs;
+        params = self.params;
 
         if (knot_length == -1):  k = self.k;
         else:  k = knot_length;
@@ -307,9 +307,9 @@ class system:
         q[0]  = q0;
         qm[0] = q0;
         for i in range(km):
-            dq1 = self.model(qm[i], u, inputs);
+            dq1 = self.model(qm[i], u, params);
             qeu = [qm[i][j] + dq1[j]*dtm for j in range(N)];
-            dq2 = self.model(qeu, u, inputs);
+            dq2 = self.model(qeu, u, params);
             qm[i+1] = [qm[i][j] + 1/2*(dq1[j] + dq2[j])*dtm for j in range(N)];
 
             if ((i+1) % adj == 0):  q[int(i/adj+1)] = qm[i+1];
@@ -356,6 +356,6 @@ class system:
 
             qlist[i] = self.modeuler(qlist[i-1], ulist[i][:N], 1)[1][1];
 
-            if (update != 0):  self.inputs = update(self, qlist[i], ulist[i]);
+            if (update != 0):  self.params = update(self, qlist[i], ulist[i]);
 
         return (T, qlist, ulist, Clist, nlist, brklist, tlist);
