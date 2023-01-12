@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 
 class Sphere:
-    def __init__(self, center, radius, color='yellowgreen'):
+    def __init__(self, center, radius, color='#9C9C9C'):
         self.x = center;
         self.r = radius;
         self.color = color;
@@ -20,4 +20,15 @@ class Sphere:
     def plot(self, axes=None):
         if axes is None:
             _, axes = plt.subplots();
-        pass;
+
+        if self.r < 0:
+            edge = self.color;
+            face = 'none';
+        else:
+            edge = 'none';
+            face = self.color;
+
+        spherepatch = plt.Circle(tuple(self.x), self.r,
+            facecolor=face, edgecolor=edge);
+
+        axes.add_patch(spherepatch);
