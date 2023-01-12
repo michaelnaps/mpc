@@ -11,7 +11,8 @@ import pickle
 class ModelPredictiveControl:
     def __init__(self, solver, costFunction, modelFunction, user_params,
                  num_inputs, num_ssvar, PH_length=1, knot_length=1, time_step=0.025,
-                 appx_zero=1e-6, step_size=1e-3, max_iter=10):
+                 appx_zero=1e-6, step_size=1e-3, max_iter=10,
+                 model_type='continuous'):
         self.solver = solver;
         self.cost   = costFunction;
         self.model  = modelFunction;
@@ -24,6 +25,7 @@ class ModelPredictiveControl:
         self.zero   = appx_zero;
         self.h      = step_size;
         self.n_max  = max_iter;
+        self.type   = model_type;
 
         self._dt_min = 1e-3;
 
@@ -274,6 +276,7 @@ class ModelPredictiveControl:
         N  = self.q_num;
         Nu = self.u_num;
         P  = self.PH;
+        params = self.params;
 
         # reshape input variable
         uc = np.reshape(u, [P, Nu]);
@@ -283,7 +286,10 @@ class ModelPredictiveControl:
         q = [[0 for i in range(2*N)] for j in range(P+1)];
         q[0] = q0;
         for i in range(P):
-            q[i+1] = self.modeuler(q[i], uc[i])[1][-1];
+            if self.type == 'continuous':
+                q[i+1] = self.modeuler(q[i], uc[i])[1][-1];
+            elif self.type =='discrete':
+                q[i+1] = self.model(q[i], uc[i], params);
 
         return q;
 
@@ -323,6 +329,7 @@ class ModelPredictiveControl:
         N  = self.u_num;
         P  = self.PH;
         dt = self.dt;
+        params = self.params;
 
         # simulation time variables
         Nt = int(sim_time/dt+1);
@@ -354,7 +361,10 @@ class ModelPredictiveControl:
 
             if output:  print("Elapsed Time:\n              ", tlist[i]);
 
-            qlist[i] = self.modeuler(qlist[i-1], ulist[i][:N], 1)[1][1];
+            if self.type == 'continuous':
+                qlist[i] = self.modeuler(qlist[i-1], ulist[i][:N], 1)[1][1];
+            elif self.type == 'discrete':
+                qlist[i] = self.model(qlist[i-1], ulist[i][:N], params);
 
             if (update != 0):  self.params = update(self, qlist[i], ulist[i]);
 
