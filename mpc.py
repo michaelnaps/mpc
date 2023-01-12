@@ -287,14 +287,14 @@ class ModelPredictiveControl:
 
         return q;
 
-    def modeuler(self, q0, u, knot_length=-1):
+    def modeuler(self, q0, u, knot_length=0):
         N  = self.q_num;
         P  = self.PH;
         dt = self.dt;
         dt_min = self._dt_min;
         params = self.params;
 
-        if (knot_length == -1):  k = self.k;
+        if (knot_length == 0):  k = self.k;
         else:  k = knot_length;
 
         if (dt >= dt_min):  adj = int(dt/dt_min);
@@ -308,9 +308,9 @@ class ModelPredictiveControl:
         qm[0] = q0;
         for i in range(km):
             dq1 = self.model(qm[i], u, params);
-            qeu = [qm[i][j] + dq1[j]*dtm for j in range(N)];
+            qeu = [qm[i][j] + dq1[j]*dtm for j in range(2*N)];
             dq2 = self.model(qeu, u, params);
-            qm[i+1] = [qm[i][j] + 1/2*(dq1[j] + dq2[j])*dtm for j in range(N)];
+            qm[i+1] = [qm[i][j] + 1/2*(dq1[j] + dq2[j])*dtm for j in range(2*N)];
 
             if ((i+1) % adj == 0):  q[int(i/adj+1)] = qm[i+1];
 
