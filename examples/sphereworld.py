@@ -9,9 +9,9 @@ def init_sphereworld():
     obs1 = Sphere([2,5], 2.5);
     obs2 = Sphere([-5,1], 4.);
     obs3 = Sphere([0,-7], 3.);
-    # obs4 = Sphere([0,-2.5], 3.)
+    obs4 = Sphere([0,-2.5], 3.)
 
-    return (wall, obs1, obs2, obs3);
+    return (wall, obs1, obs2, obs3, obs4);
 
 def model(q, u, _):
     dt = 0.025;
@@ -30,7 +30,7 @@ def cost(mpc_var, qlist, ulist, sphereworld):
     PH = mpc_var.PH;
 
     kq = 1;
-    ku = 0.1;
+    ku = 1;
     ko = 1;
 
     C = 0;
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     q0 = [-1.7, -9.6];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
-    sim_time = 5;
+    sim_time = 10;
     T, qlist, ulist = mpc_var.sim_root(sim_time, q0, uinit, output=1)[0:3];
 
     plot(T, qlist, sphereworld);
