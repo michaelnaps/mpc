@@ -37,7 +37,6 @@ def cost(mpc_var, qlist, ulist, params):
 
 def pendulum(T, q):
     fig, axes = plt.subplots();
-
     axes.plot(T, q);
 
 if __name__ == "__main__":
