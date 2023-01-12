@@ -365,6 +365,6 @@ class ModelPredictiveControl:
             elif self.type == 'discrete':
                 qlist[i] = self.model(qlist[i-1], ulist[i][:N], params);
 
-            if (update != 0):  self.params = update(self, qlist[i], ulist[i]);
+            if (update != 0):  self.params = update(self, T[i], qlist[i], ulist[i]);
 
         return (T, qlist, ulist, Clist, nlist, brklist, tlist);

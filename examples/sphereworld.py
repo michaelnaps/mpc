@@ -30,7 +30,7 @@ def cost(mpc_var, qlist, ulist, sphereworld):
     PH = mpc_var.PH;
 
     kq = 1;
-    ku = 1;
+    ku = 0.25;
     ko = 1;
 
     C = 0;
