@@ -7,14 +7,14 @@ import numpy as np
 import time
 
 class ModelPredictiveControl:
-    def __init__(self, solver, costFunction, modelFunction, user_params,
-                 num_inputs, num_ssvar=1, PH_length=1,
-                 knot_length=1, time_step=0.025,
-                 appx_zero=1e-6, step_size=1e-3, max_iter=10,
-                 model_type='continuous'):
+    def __init__(self, solver, modelFunction, costFunction,
+            user_params, num_inputs, num_ssvar=1,
+            PH_length=1, knot_length=1, time_step=0.025,
+            appx_zero=1e-6, step_size=1e-3, max_iter=10,
+            model_type='continuous'):
         self.solver = solver;
-        self.cost   = costFunction;
         self.model  = modelFunction;
+        self.cost   = costFunction;
         self.params = user_params;
         self.u_num  = num_inputs;
         self.q_num  = num_ssvar;

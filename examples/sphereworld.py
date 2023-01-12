@@ -15,7 +15,7 @@ def init_sphereworld():
 def model(q, u, _):
     dt = 0.025;
 
-    # discrete
+    # discrete steps
     qn = [
         q[0] + dt*u[0],
         q[1] + dt*u[1]
@@ -29,8 +29,8 @@ def cost(mpc_var, qlist, ulist, sphereworld):
     PH = mpc_var.PH;
 
     kq = 1;
-    ku = 0.01;
-    ko = 10;
+    ku = 0.1;
+    ko = 1;
 
     C = 0;
     k = 0;
@@ -40,7 +40,7 @@ def cost(mpc_var, qlist, ulist, sphereworld):
         k += Nu;
 
         for sphere in sphereworld:
-            C += ko*abs(1/sphere.distance(qlist[i]));
+            C += ko*1/sphere.distance(qlist[i]);
 
     C += kq*((qlist[-1][0] - qd[0])**2 + (qlist[-1][1] - qd[1])**2);
 
@@ -59,18 +59,23 @@ def plot(T, q, sphereworld):
 
 if __name__ == "__main__":
     num_inputs = 2;
-    PH_length = 10;
+    PH_length = 5;
     model_type = 'discrete';
     sphereworld = init_sphereworld();
 
-    mpc_var = ModelPredictiveControl('nno', cost, model, sphereworld, num_inputs,
-            PH_length=PH_length, model_type=model_type);
+    mpc_var = ModelPredictiveControl('nno', model, cost, sphereworld, num_inputs,
+            PH_length=PH_length, knot_length=2, model_type=model_type);
+    mpc_var.setMinTimeStep(1);  # arbitrarily large
 
     q0 = [-4, -4];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
-    sim_time = 0.1;
+    sim_time = 7.5;
     T, qlist, ulist = mpc_var.sim_root(sim_time, q0, uinit, output=1)[0:3];
 
     plot(T, qlist, sphereworld);
+    plt.show();
+
+    _, axes = plt.subplots();
+    axes.plot(T, qlist);
     plt.show();
