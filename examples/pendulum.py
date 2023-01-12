@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, '../.');
 
-import math
+import numpy as np
 import matplotlib.pyplot as plt
 
 from mpc import *
@@ -15,7 +15,7 @@ def model(q, u, _):
 
     dq = [
         q[1],
-        (u[0] - g/l*math.cos(q[0]) - c*q[1])
+        (u[0] - g/l*np.cos(q[0]) - c*q[1])
     ];
 
     return dq;

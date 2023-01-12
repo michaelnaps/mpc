@@ -4,9 +4,7 @@
 
 
 import numpy as np
-import math
 import time
-import pickle
 
 class ModelPredictiveControl:
     def __init__(self, solver, costFunction, modelFunction, user_params,
