@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 
 from mpc import *
 
-def model(q, u, dt):
+def model(q, u, _):
     l = 1;
     m = 1;
     c = 1;
     g = 9.81;
+    dt = 0.025;
 
     dq = [
         q[0] + dt*q[1],
@@ -40,7 +41,7 @@ def pendulum(T, q):
     axes.plot(T, q);
 
 if __name__ == "__main__":
-    params = 0.025;
+    params = None;
     PH_length = 10;
 
     mpc_var = ModelPredictiveControl('nno', cost, model, params, 1, 1, PH_length=PH_length, model_type='discrete');
