@@ -9,6 +9,7 @@ def init_sphereworld():
     obs1 = Sphere([2,5], 2.5);
     obs2 = Sphere([-5,1], 4.);
     obs3 = Sphere([0,-7], 3.);
+    # obs4 = Sphere([0,-2.5], 3.)
 
     return (wall, obs1, obs2, obs3);
 
@@ -47,6 +48,7 @@ def cost(mpc_var, qlist, ulist, sphereworld):
     return C;
 
 def plot(T, q, sphereworld):
+    qd = [4, 8];
     qlist = np.transpose(q);
 
     fig, axes = plt.subplots();
@@ -55,6 +57,7 @@ def plot(T, q, sphereworld):
         sphere.plot(axes);
 
     axes.plot(qlist[0], qlist[1]);
+    axes.plot(qd[0], qd[1], color='yellowgreen', marker='*');
     axes.set_aspect('equal');
 
 if __name__ == "__main__":
@@ -67,15 +70,11 @@ if __name__ == "__main__":
             PH_length=PH_length, knot_length=2, model_type=model_type);
     mpc_var.setMinTimeStep(1);  # arbitrarily large
 
-    q0 = [-4, -4];
+    q0 = [-1.7, -9.6];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
-    sim_time = 7.5;
+    sim_time = 5;
     T, qlist, ulist = mpc_var.sim_root(sim_time, q0, uinit, output=1)[0:3];
 
     plot(T, qlist, sphereworld);
-    plt.show();
-
-    _, axes = plt.subplots();
-    axes.plot(T, qlist);
     plt.show();
