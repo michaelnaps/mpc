@@ -10,7 +10,8 @@ import pickle
 
 class ModelPredictiveControl:
     def __init__(self, solver, costFunction, modelFunction, user_params,
-                 num_inputs, num_ssvar, PH_length=1, knot_length=1, time_step=0.025,
+                 num_inputs, num_ssvar=1, PH_length=1,
+                 knot_length=1, time_step=0.025,
                  appx_zero=1e-6, step_size=1e-3, max_iter=10,
                  model_type='continuous'):
         self.solver = solver;
@@ -283,7 +284,7 @@ class ModelPredictiveControl:
 
         # Cost of each input over the designated windows
         # simulate over the prediction horizon and sum cost
-        q = [[0 for i in range(2*N)] for j in range(P+1)];
+        q = [[0 for i in range(N)] for j in range(P+1)];
         q[0] = q0;
         for i in range(P):
             if self.type == 'continuous':
@@ -307,16 +308,16 @@ class ModelPredictiveControl:
         else:  adj = 1;
 
         km = k*adj;  dtm = dt/adj;
-        q  = [[0 for j in range(2*N)] for i in range(k+1)];
-        qm = [[0 for j in range(2*N)] for i in range(km+1)];
+        q  = [[0 for j in range(N)] for i in range(k+1)];
+        qm = [[0 for j in range(N)] for i in range(km+1)];
 
         q[0]  = q0;
         qm[0] = q0;
         for i in range(km):
             dq1 = self.model(qm[i], u, params);
-            qeu = [qm[i][j] + dq1[j]*dtm for j in range(2*N)];
+            qeu = [qm[i][j] + dq1[j]*dtm for j in range(N)];
             dq2 = self.model(qeu, u, params);
-            qm[i+1] = [qm[i][j] + 1/2*(dq1[j] + dq2[j])*dtm for j in range(2*N)];
+            qm[i+1] = [qm[i][j] + 1/2*(dq1[j] + dq2[j])*dtm for j in range(N)];
 
             if ((i+1) % adj == 0):  q[int(i/adj+1)] = qm[i+1];
 

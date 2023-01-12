@@ -44,7 +44,7 @@ if __name__ == "__main__":
     params = None;
     PH_length = 10;
 
-    mpc_var = ModelPredictiveControl('nno', cost, model, params, 1, 1, PH_length=PH_length, model_type='discrete');
+    mpc_var = ModelPredictiveControl('nno', cost, model, params, 1, PH_length=PH_length, model_type='discrete');
     mpc_var.setMinTimeStep(1);
 
     q0 = [0, 0];
