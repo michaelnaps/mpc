@@ -82,7 +82,7 @@ class ModelPredictiveControl:
         # loop variable setup
         uc = uinit;
         q  = self.simulate(q0, uc);
-        Cc = self.cost(self, q, uc, params);
+        Cc = self.cost(self, q, uc);
         un = uc;  Cn = Cc;
 
         if output:
@@ -110,7 +110,7 @@ class ModelPredictiveControl:
 
             # simulate and calculate the new cost value
             q  = self.simulate(q0, un);
-            Cn = self.cost(self, q, un, params);
+            Cn = self.cost(self, q, un);
             count += 1;  # iterate the loop counter
 
             if (np.isnan(Cn)):
@@ -150,7 +150,7 @@ class ModelPredictiveControl:
         # loop variable setup
         uc = uinit;
         q  = self.simulate(q0, uc);
-        Cc = self.cost(self, q, uc, params);
+        Cc = self.cost(self, q, uc);
         un = uc;  Cn = Cc;
 
         if output:
@@ -175,7 +175,7 @@ class ModelPredictiveControl:
             else:
                 un = [uc[i] - alpha*g[i] for i in range(P*N)];
                 q  = self.simulate(q0, un);
-                Cn = self.cost(self, q, un, params);
+                Cn = self.cost(self, q, un);
 
             count += 1;  # iterate the loop counter
 
@@ -219,8 +219,8 @@ class ModelPredictiveControl:
             qn1 = self.simulate(q0, un1);
             qp1 = self.simulate(q0, up1);
 
-            Cn1 = self.cost(self, qn1, un1, params);
-            Cp1 = self.cost(self, qp1, up1, params);
+            Cn1 = self.cost(self, qn1, un1);
+            Cp1 = self.cost(self, qp1, up1);
 
             g[i] = (Cp1 - Cn1)/(2*h);
 
@@ -259,7 +259,7 @@ class ModelPredictiveControl:
         while ((count != 1000) & (a > eps)):
             ubkl = [uc[i] - a*g[i] for i in range(P*N)];
             q  = self.simulate(q0, ubkl);
-            Cbkl = self.cost(self, q, ubkl, params);
+            Cbkl = self.cost(self, q, ubkl);
             count += 1;
 
             if (Cbkl < C):
@@ -323,7 +323,7 @@ class ModelPredictiveControl:
 
         return (T, q);
 
-    def sim_root(self, sim_time, q0, u0, update=0, output=0):
+    def sim_root(self, sim_time, q0, u0, callback=0, output=0):
         # mpc variables
         N  = self.u_num;
         P  = self.PH;
@@ -365,6 +365,6 @@ class ModelPredictiveControl:
             elif self.type == 'discrete':
                 qlist[i] = self.model(qlist[i-1], ulist[i][:N], params);
 
-            if (update != 0):  self.params = update(self, T[i], qlist[i], ulist[i]);
+            if (callback != 0):  self.params = callback(self, T[i], qlist[i], ulist[i]);
 
         return (T, qlist, ulist, Clist, nlist, brklist, tlist);

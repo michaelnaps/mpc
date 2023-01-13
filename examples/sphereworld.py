@@ -24,7 +24,8 @@ def model(q, u, _):
 
     return qn;
 
-def cost(mpc_var, qlist, ulist, sphereworld):
+def cost(mpc_var, qlist, ulist):
+    sphereworld = mpc_var.params.sphereworld;
     qd = [4, 8];
     Nu = mpc_var.u_num;
     PH = mpc_var.PH;
@@ -47,26 +48,37 @@ def cost(mpc_var, qlist, ulist, sphereworld):
 
     return C;
 
-def plot(T, q, sphereworld):
-    qd = [4, 8];
-    qlist = np.transpose(q);
+def plot(T, q, params):
+    sphereworld = params.sphereworld;
+    qd = params.qd;
 
     fig, axes = plt.subplots();
+    fig.tight_layout();
 
     for sphere in sphereworld:
         sphere.plot(axes);
 
+    qlist = np.transpose(q);
     axes.plot(qlist[0], qlist[1]);
     axes.plot(qd[0], qd[1], color='yellowgreen', marker='*');
     axes.set_aspect('equal');
+
+class Parameters:
+    def __init__(self):
+        self.sphereworld = init_sphereworld();
+        self.qd = [4, 8];
+
+def callback(mpc_var, t, q, ulist):
+    return Parameters();
 
 if __name__ == "__main__":
     num_inputs = 2;
     PH_length = 5;
     model_type = 'discrete';
-    sphereworld = init_sphereworld();
 
-    mpc_var = ModelPredictiveControl('nno', model, cost, sphereworld, num_inputs,
+    params = Parameters();
+
+    mpc_var = ModelPredictiveControl('nno', model, cost, params, num_inputs,
             PH_length=PH_length, knot_length=2, model_type=model_type);
     mpc_var.setMinTimeStep(1);  # arbitrarily large
 
@@ -74,7 +86,8 @@ if __name__ == "__main__":
     uinit = [0 for i in range(num_inputs*PH_length)];
 
     sim_time = 20;
-    T, qlist, ulist = mpc_var.sim_root(sim_time, q0, uinit, output=1)[0:3];
+    T, qlist, ulist = mpc_var.sim_root(sim_time, q0, uinit,
+        callback=callback, output=1)[0:3];
 
-    plot(T, qlist, sphereworld);
+    plot(T, qlist, params);
     plt.show();
