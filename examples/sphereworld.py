@@ -82,7 +82,7 @@ if __name__ == "__main__":
             PH_length=PH_length, knot_length=2, model_type=model_type);
     mpc_var.setMinTimeStep(1);  # arbitrarily large
 
-    q0 = [-1.7, -9.6];
+    q0 = [-1.68, -9.6];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
     sim_time = 20;
