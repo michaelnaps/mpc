@@ -4,6 +4,17 @@ sys.path.insert(0, '../.');
 from mpc import *
 from Sphere import *
 
+class Parameters:
+    def __init__(self, fig=None, axes=None):
+        if fig is None or axes is None:
+            self.fig, self.axes = plt.subplots();
+        else:
+            self.fig = fig;
+            self.axes = axes;
+        self.sphereworld = init_sphereworld();
+        self.qd = [4, 8, 0, 0];
+        self.pause = 1e-6;
+
 def init_sphereworld():
     wall = Sphere([0,0], -10);
     obs1 = Sphere([2,5], 2.5);
@@ -15,29 +26,34 @@ def init_sphereworld():
 
 def model(q, u, _):
     dt = 0.025;
+    c = 0.1;
 
     # discrete steps
     qn = [
-        q[0] + dt*u[0],
-        q[1] + dt*u[1]
+        q[0] + dt*q[2],
+        q[1] + dt*q[3],
+        q[2] + dt*u[0] - c*q[2],
+        q[3] + dt*u[1] - c*q[3]
     ];
 
     return qn;
 
 def cost(mpc_var, qlist, ulist):
     sphereworld = mpc_var.params.sphereworld;
-    qd = [4, 8];
+    qd = mpc_var.params.qd;
     Nu = mpc_var.u_num;
     PH = mpc_var.PH;
 
     kq = 1;
-    ku = 0.25;
+    kdq = 0.1;
+    ku = 0.001;
     ko = 1;
 
     C = 0;
     k = 0;
     for i in range(PH):
         C += kq*((qlist[i][0] - qd[0])**2 + (qlist[i][1] - qd[1])**2);
+        C += kdq*(qlist[i][2]**2 + qlist[i][3]**2);
         C += ku*(ulist[k]**2 + ulist[k+1]**2);
         k += Nu;
 
@@ -48,41 +64,50 @@ def cost(mpc_var, qlist, ulist):
 
     return C;
 
-def plot(T, q, params):
+def plot(T, q, params, u=None):
     sphereworld = params.sphereworld;
     qd = params.qd;
 
-    fig, axes = plt.subplots();
+    fig = params.fig;
+    axes = params.axes;
+
     fig.tight_layout();
 
     for sphere in sphereworld:
         sphere.plot(axes);
 
-    qlist = np.transpose(q);
-    axes.plot(qlist[0], qlist[1]);
+    if q is not None:
+        qlist = np.transpose(q);
+        axes.plot(qlist[0], qlist[1])
+
     axes.plot(qd[0], qd[1], color='yellowgreen', marker='*');
     axes.set_aspect('equal');
 
-class Parameters:
-    def __init__(self):
-        self.sphereworld = init_sphereworld();
-        self.qd = [4, 8];
-
 def callback(mpc_var, t, q, ulist):
-    return Parameters();
+    axes = mpc_var.params.axes;
+
+    axes.plot(q[0], q[1], color='b', marker='.', markersize=2)
+    plt.show(block=0);
+
+    plt.pause(mpc_var.params.pause);
+
+    return Parameters(mpc_var.params.fig, mpc_var.params.axes);
 
 if __name__ == "__main__":
     num_inputs = 2;
     PH_length = 5;
+    num_ssvar = 4;
     model_type = 'discrete';
 
     params = Parameters();
+    plot(None, None, params)
 
     mpc_var = ModelPredictiveControl('nno', model, cost, params, num_inputs,
-            PH_length=PH_length, knot_length=2, model_type=model_type);
+        num_ssvar=num_ssvar, PH_length=PH_length, knot_length=4,
+        model_type=model_type);
     mpc_var.setMinTimeStep(1);  # arbitrarily large
 
-    q0 = [-1.68, -9.6];
+    q0 = [-1.68, -9.6, 0, 0];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
     sim_time = 20;
