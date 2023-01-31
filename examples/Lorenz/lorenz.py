@@ -9,9 +9,21 @@ import mpl_toolkits.mplot3d as plt3d
 from mpc import *
 
 
+class Parameters:
+    def __init__(self, fig=None, axes=None):
+        if fig is None or axes is None:
+            self.fig = plt.figure();
+            self.axs = plt.axes(projection='3d');
+        else:
+            self.fig = fig;
+            self.axs = axes;
+
+        self.pause = 0.001;
+
+
 def model(q, u=None, params=None):
-    x = q[0];  sig = 28;
-    y = q[1];  rho = 10;
+    x = q[0];  sig = 10;
+    y = q[1];  rho = 28;
     z = q[2];  bet = 8/3;
 
     dq = [
@@ -26,21 +38,29 @@ def cost(mpc_var, qlist, ulist):
     return 0;
 
 def plot(T, q, params=None):
-    fig = plt.figure();
-    ax = plt3d.Axes3D(fig);
-
-    npq = np.array(q);
-    ax.plot(npq[:,0], npq[:,1], npq[:,2])
-
-    return fig, ax;
+    params.fig.tight_layout();
+    # params.axs.set_aspect('equal');
+    return params;
 
 def callback(mpc_var, t, q, ulist):
-    pass;
+
+    mpc_var.params.axs.plot([q[0]], [q[1]], [q[2]],
+        color='b', marker='.', markersize=2);
+
+    mpc_var.params.axs.set_title("time: %.3f" % t)
+
+    plt.show(block=0);
+
+    plt.pause(mpc_var.params.pause);
+
+    return Parameters(mpc_var.params.fig, mpc_var.params.axs);
 
 
 if __name__ == "__main__":
     # MPC class variables
-    params=None;
+    params = Parameters();
+    params = plot(None,None,params);
+
     num_inputs = 3;
     PH_length = 10;
     num_ssvar = 3;
@@ -52,12 +72,13 @@ if __name__ == "__main__":
         time_step=0.001, model_type=model_type);
 
     # state initialization
-    q0 = [0.01, 10, -4];
+    q0 = [1, 1, 1.0000001];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
     # simulate lorenz
-    sim_time = 100;
-    T, qlist, ulist = mpc_var.sim_root(sim_time, q0, uinit, output=0)[0:3];
+    sim_time = 30;
+    T, qlist, ulist = mpc_var.sim_root(sim_time, q0, uinit,
+        callback=callback, output=0)[0:3];
 
-    plot(T, qlist);
-    plt.show();
+    # plot(T, qlist);
+    # plt.show();
