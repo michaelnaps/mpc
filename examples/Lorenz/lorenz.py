@@ -5,18 +5,32 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d as plt3d
+import matplotlib.patches as pat
 
 from mpc import *
 
 
 class Parameters:
-    def __init__(self, fig=None, axes=None):
-        if fig is None or axes is None:
+    def __init__(self, fig=None, axes=None, trail=None, event=None):
+        if fig is None:
             self.fig = plt.figure();
-            self.axs = plt.axes(projection='3d');
         else:
             self.fig = fig;
+
+        if axes is None:
+            self.axs = plt.axes(projection='3d');
+        else:
             self.axs = axes;
+
+        if trail is None:
+            self.trail = None;
+        else:
+            self.trail = trail;
+
+        if event is None:
+            self.event = None;
+        else:
+            self.event = event;
 
         self.pause = 0.001;
 
@@ -43,10 +57,12 @@ def plot(T, q, params=None):
     params.axs.set_zlim3d(0, 50);
     params.fig.tight_layout();
 
-    if q is not None:
+    if T is not None:
         npq = np.array(q);
         params.axs.plot(npq[:,0], npq[:,1], npq[:,2]);
         plt.show();
+    else:
+
 
     return params;
 
