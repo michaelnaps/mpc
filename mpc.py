@@ -361,7 +361,7 @@ class ModelPredictiveControl:
             if output:  print("Elapsed Time:\n              ", tlist[i]);
 
             if self.type == 'continuous':
-                qlist[i] = self.modeuler(qlist[i-1], ulist[i][:N], 1)[1][1];
+                qlist[i] = self.modeuler(qlist[i-1], ulist[i][:N])[1][1];
             elif self.type == 'discrete':
                 qlist[i] = self.model(qlist[i-1], ulist[i][:N], params);
 
