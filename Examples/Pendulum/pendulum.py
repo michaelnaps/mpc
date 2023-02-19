@@ -20,7 +20,7 @@ def model(q, u, _):
 
     return dq;
 
-def cost(mpc_var, qlist, ulist, params):
+def cost(mpc_var, qlist, ulist):
     qd = [np.pi/2, 0];
     kq = 1;
     kdq = 0.1;
