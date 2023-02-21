@@ -100,7 +100,7 @@ def cost(mpc_var, xlist, ulist):
         k += Nu;
 
         for sphere in sphereworld:
-            C += ko*1/sphere.distance(xlist[i]);
+            C += ko*10/sphere.distance(xlist[i]);
 
     C += kx*((xlist[-1][0] - xd[0])**2 + (xlist[-1][1] - xd[1])**2);
 
