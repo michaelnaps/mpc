@@ -10,20 +10,14 @@ import matplotlib.path as path
 
 
 class Parameters:
-    def __init__(self, x0,
-                 fig=None, axs=None,
-                 buffer_length=10, pause=1e-3,
-                 color='k'):
+    def __init__(self, x0, fig=None, axs=None, buffer_length=10, pause=1e-3, color='k'):
+        self.pause = pause;
 
         if axs is None and fig is None:
             self.fig, self.axs = plt.subplots();
         else:
             self.fig = fig;
             self.axs = axs;
-
-        self.axs.set_xlim(-10,10);
-        self.axs.set_ylim(-10,10);
-        self.axs.axis('equal');
 
         # initialize buffer (trail)
         self.color = color;
@@ -33,14 +27,17 @@ class Parameters:
 
         self.axs.add_patch(self.trail_patch);
 
-        self.pause = pause;
-
         # system specific
         self.xd = [5, 7, 0, 0];
-        self.sphereworld = init_sphereworld();
+        self.axs.plot(self.xd[0], self.xd[1], color='g', marker='*', markersize=5)
 
+        self.sphereworld = init_sphereworld();
         for sphere in self.sphereworld:
             sphere.plot(self.axs);
+
+        self.axs.set_xlim(-10,10);
+        self.axs.set_ylim(-10,10);
+        self.axs.axis('equal');
 
     def update(self, t, x):
         self.trail_patch.remove();
@@ -86,10 +83,10 @@ def cost(mpc_var, xlist, ulist):
     Nu = mpc_var.u_num;
     PH = mpc_var.PH;
 
-    kx = 1;
-    kdx = 0.1;
-    ku = 0.001;
-    ko = 1;
+    kx = 1000;
+    kdx = 20;
+    ku = 1;
+    ko = 1000;
 
     C = 0;
     k = 0;
@@ -100,7 +97,7 @@ def cost(mpc_var, xlist, ulist):
         k += Nu;
 
         for sphere in sphereworld:
-            C += ko*10/sphere.distance(xlist[i]);
+            C += ko/sphere.distance(xlist[i]);
 
     C += kx*((xlist[-1][0] - xd[0])**2 + (xlist[-1][1] - xd[1])**2);
 
