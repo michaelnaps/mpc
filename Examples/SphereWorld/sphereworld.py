@@ -22,7 +22,7 @@ class Parameters:
         # initialize buffer (trail)
         self.color = color;
 
-        self.buffer = np.kron( np.ones( (buffer_length, 1) ), x0[:][:2]);
+        self.buffer = [x0[:][:2] for i in range(buffer_length)];
         self.trail_patch = patch.PathPatch(path.Path(self.buffer), color=self.color);
 
         self.axs.add_patch(self.trail_patch);
@@ -83,10 +83,10 @@ def cost(mpc_var, xlist, ulist):
     Nu = mpc_var.u_num;
     PH = mpc_var.PH;
 
-    kx = 1000;
-    kdx = 20;
+    kx = 150;
+    kdx = 5;
     ku = 1;
-    ko = 1000;
+    ko = 50;
 
     C = 0;
     k = 0;
@@ -109,7 +109,7 @@ def callback(mvar, T, x, u):
 
 if __name__ == "__main__":
     num_inputs = 2;
-    PH_length = 5;
+    PH_length = 10;
     num_ssvar = 4;
     model_type = 'discrete';
 
@@ -118,14 +118,24 @@ if __name__ == "__main__":
 
     params = Parameters(x0, buffer_length=25);
 
-    mpc_var = ModelPredictiveControl('nno', model, cost, params, num_inputs,
-        num_ssvar=num_ssvar, PH_length=PH_length, knot_length=5,
+    mpc_var = ModelPredictiveControl('ngd', model, cost, params, num_inputs,
+        num_ssvar=num_ssvar, PH_length=PH_length, knot_length=1,
         model_type=model_type);
+    mpc_var.setAlpha(0.1);
     mpc_var.setMinTimeStep(1);  # arbitrarily large
 
-    sim_time = 20;
-    T, xlist, ulist = mpc_var.sim_root(sim_time, x0, uinit,
-        callback=callback, output=1)[0:3];
+    sim_time = 10;
+    sim_results = mpc_var.sim_root(sim_time, x0, uinit,
+        callback=callback, output=0);
+    plt.close('all');
 
-    plot(T, xlist, params);
+    T = sim_results[0];
+    xlist = sim_results[1];
+    ulist = sim_results[2];
+    tlist = sim_results[6];
+
+    # plot calculation speed
+    fig, axs = plt.subplots();
+    axs.plot(T, tlist);
+    axs.set_xlim(-1, max(T)+1)
     plt.show();
