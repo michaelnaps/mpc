@@ -85,19 +85,21 @@ def cost(mpc_var, xlist, ulist):
 
     kx = 150;
     kdx = 5;
-    ku = 1;
+    ku = 0.1;
     ko = 50;
 
     C = 0;
     k = 0;
-    for i in range(PH):
-        C += kx*((xlist[i][0] - xd[0])**2 + (xlist[i][1] - xd[1])**2);
-        C += kdx*(xlist[i][2]**2 + xlist[i][3]**2);
-        C += ku*(ulist[k]**2 + ulist[k+1]**2);
-        k += Nu;
+    for i, x in enumerate(xlist):
+        C += kx*((x[0] - xd[0])**2 + (x[1] - xd[1])**2);
+        C += kdx*(x[2]**2 + x[3]**2);
+
+        if (i != PH):
+            C += ku*(ulist[k]**2 + ulist[k+1]**2);
+            k += Nu;
 
         for sphere in sphereworld:
-            C += ko/sphere.distance(xlist[i]);
+            C += ko/sphere.distance(x);
 
     C += kx*((xlist[-1][0] - xd[0])**2 + (xlist[-1][1] - xd[1])**2);
 
@@ -109,7 +111,7 @@ def callback(mvar, T, x, u):
 
 if __name__ == "__main__":
     num_inputs = 2;
-    PH_length = 10;
+    PH_length = 5;
     num_ssvar = 4;
     model_type = 'discrete';
 
@@ -126,7 +128,7 @@ if __name__ == "__main__":
 
     sim_time = 10;
     sim_results = mpc_var.sim_root(sim_time, x0, uinit,
-        callback=callback, output=0);
+        callback=callback, output=1);
     plt.close('all');
 
     T = sim_results[0];
