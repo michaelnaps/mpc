@@ -101,8 +101,6 @@ def cost(mpc_var, xlist, ulist):
         for sphere in sphereworld:
             C += ko/sphere.distance(x);
 
-    C += kx*((xlist[-1][0] - xd[0])**2 + (xlist[-1][1] - xd[1])**2);
-
     return C;
 
 def callback(mvar, T, x, u):
