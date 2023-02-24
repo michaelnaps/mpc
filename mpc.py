@@ -16,7 +16,7 @@ class ModelPredictiveControl:
         self.cost   = costFunction;
         self.params = user_params;
         self.u_num  = num_inputs;
-        self.q_num  = num_ssvar;
+        self.x_num  = num_ssvar;
         self.PH     = PH_length;
         self.k      = knot_length;
         self.dt     = time_step;
@@ -57,22 +57,22 @@ class ModelPredictiveControl:
     def getAlphaMethod(self):
         return self._a_method;
 
-    def solve(self, q0, uinit, output=0):
+    def solve(self, x0, uinit, output=0):
 
         if (self.solver == 'nno'):
             print("ERROR: nno algorithm is deprecated for MicroPython applications.");
             return;
         #     t = time.time();
-        #     (u, C, n, brk) = self.nno(q0, uinit, output);
+        #     (u, C, n, brk) = self.nno(x0, uinit, output);
         #     elapsed = 1000*(time.time() - t);
         if (self.solver == 'ngd'):
             t = time.time();
-            (u, C, n, brk) = self.ngd(q0, uinit, output);
+            (u, C, n, brk) = self.ngd(x0, uinit, output);
             elapsed = 1000*(time.time() - t);
 
         return (u, C, n, brk, elapsed);
 
-    def ngd(self, q0, uinit, output=0):
+    def ngd(self, x0, uinit, output=0):
         # MPC constants initialization
         N      = self.u_num;
         P      = self.PH;
@@ -86,8 +86,8 @@ class ModelPredictiveControl:
 
         # loop variable setup
         uc = uinit;
-        q  = self.simulate(q0, uc);
-        Cc = self.cost(self, q, uc);
+        x  = self.simulate(x0, uc);
+        Cc = self.cost(self, x, uc);
         un = uc;  Cn = Cc;
 
         if output:
@@ -99,7 +99,7 @@ class ModelPredictiveControl:
         # cost function must be positive
         while (Cc > eps):
             # calculate the gradient around the current input
-            g = self.gradient(q0, uc);
+            g = self.gradient(x0, uc);
             gnorm = sum([g[i]**2 for i in range(N)]);
 
             # check if gradient-norm is an approx. of zero
@@ -109,11 +109,11 @@ class ModelPredictiveControl:
 
             # calculate the next iteration of the input
             if (a_method == "bkl"):
-                (un, Cn, _, _, _) = self.alpha_bkl(g, Cc, q0, uc);
+                (un, Cn, _, _, _) = self.alpha_bkl(g, Cc, x0, uc);
             else:
                 un = [uc[i] - alpha*g[i] for i in range(P*N)];
-                q  = self.simulate(q0, un);
-                Cn = self.cost(self, q, un);
+                x  = self.simulate(x0, un);
+                Cn = self.cost(self, x, un);
 
             count += 1;  # iterate the loop counter
 
@@ -143,7 +143,7 @@ class ModelPredictiveControl:
 
         return (un, Cn, count, brk);
 
-    def gradient(self, q0, u, rownum=1):
+    def gradient(self, x0, u, rownum=1):
         # variable setup
         N = self.u_num*self.PH;
         h = self.h;
@@ -154,17 +154,17 @@ class ModelPredictiveControl:
             un1 = [u[j] - (i==j)*h for j in range(N)];
             up1 = [u[j] + (i==j)*h for j in range(N)];
 
-            qn1 = self.simulate(q0, un1);
-            qp1 = self.simulate(q0, up1);
+            xn1 = self.simulate(x0, un1);
+            xp1 = self.simulate(x0, up1);
 
-            Cn1 = self.cost(self, qn1, un1);
-            Cp1 = self.cost(self, qp1, up1);
+            Cn1 = self.cost(self, xn1, un1);
+            Cp1 = self.cost(self, xp1, up1);
 
             g[i] = (Cp1 - Cn1)/(2*h);
 
         return g;
 
-    def alpha_bkl(self, g, C, q0, uc):
+    def alpha_bkl(self, g, C, x0, uc):
         P = self.PH;
         N = self.u_num;
         eps = self.zero;
@@ -176,8 +176,8 @@ class ModelPredictiveControl:
         brk = -1;
         while ((count != 1000) & (a > eps)):
             ubkl = [uc[i] - a*g[i] for i in range(P*N)];
-            q  = self.simulate(q0, ubkl);
-            Cbkl = self.cost(self, q, ubkl);
+            x  = self.simulate(x0, ubkl);
+            Cbkl = self.cost(self, x, ubkl);
             count += 1;
 
             if (Cbkl < C):
@@ -188,9 +188,9 @@ class ModelPredictiveControl:
 
         return (ubkl, Cbkl, a, count, brk);
 
-    def simulate(self, q0, u):
+    def simulate(self, x0, u):
         # mpc variables
-        N  = self.q_num;
+        N  = self.x_num;
         Nu = self.u_num;
         P  = self.PH;
         params = self.params;
@@ -200,18 +200,18 @@ class ModelPredictiveControl:
 
         # Cost of each input over the designated windows
         # simulate over the prediction horizon and sum cost
-        q = [[0 for i in range(N)] for j in range(P+1)];
-        q[0] = q0;
+        x = [[0 for i in range(N)] for j in range(P+1)];
+        x[0] = x0;
         for i in range(P):
             if self.type == 'continuous':
-                q[i+1] = self.modeuler(q[i], uc[i])[1][-1];
+                x[i+1] = self.modeuler(x[i], uc[i])[1][-1];
             elif self.type =='discrete':
-                q[i+1] = self.model(q[i], uc[i], params);
+                x[i+1] = self.model(x[i], uc[i], params);
 
-        return q;
+        return x;
 
-    def modeuler(self, q0, u, knot_length=0):
-        N  = self.q_num;
+    def modeuler(self, x0, u, knot_length=0):
+        N  = self.x_num;
         P  = self.PH;
         dt = self.dt;
         dt_min = self._dt_min;
@@ -224,24 +224,24 @@ class ModelPredictiveControl:
         else:  adj = 1;
 
         km = k*adj;  dtm = dt/adj;
-        q  = [[0 for j in range(N)] for i in range(k+1)];
-        qm = [[0 for j in range(N)] for i in range(km+1)];
+        x  = [[0 for j in range(N)] for i in range(k+1)];
+        xm = [[0 for j in range(N)] for i in range(km+1)];
 
-        q[0]  = q0;
-        qm[0] = q0;
+        x[0]  = x0;
+        xm[0] = x0;
         for i in range(km):
-            dq1 = self.model(qm[i], u, params);
-            qeu = [qm[i][j] + dq1[j]*dtm for j in range(N)];
-            dq2 = self.model(qeu, u, params);
-            qm[i+1] = [qm[i][j] + 1/2*(dq1[j] + dq2[j])*dtm for j in range(N)];
+            dx1 = self.model(xm[i], u, params);
+            xeu = [xm[i][j] + dx1[j]*dtm for j in range(N)];
+            dx2 = self.model(xeu, u, params);
+            xm[i+1] = [xm[i][j] + 1/2*(dx1[j] + dx2[j])*dtm for j in range(N)];
 
-            if ((i+1) % adj == 0):  q[int(i/adj+1)] = qm[i+1];
+            if ((i+1) % adj == 0):  x[int(i/adj+1)] = xm[i+1];
 
         T = [i*dt for i in range(k+1)];
 
-        return (T, q);
+        return (T, x);
 
-    def sim_root(self, sim_time, q0, u0, callback=None, output=0):
+    def sim_root(self, sim_time, x0, u0, callback=None, output=0):
         # mpc variables
         N  = self.u_num;
         P  = self.PH;
@@ -253,8 +253,8 @@ class ModelPredictiveControl:
         T = [i*dt for i in range(Nt)];
 
         # state matrices declarations
-        qlist = [0 for i in range(Nt)];
-        qlist[0] = q0;
+        xlist = [0 for i in range(Nt)];
+        xlist[0] = x0;
 
         # return variables
         ulist = [0 for i in range(Nt)];
@@ -268,7 +268,7 @@ class ModelPredictiveControl:
         for i in range(1,Nt):
             if output:  print("\nTime: %0.3f" % (T[i]));
 
-            opt_results = self.solve(qlist[i-1], ulist[i-1], output);
+            opt_results = self.solve(xlist[i-1], ulist[i-1], output);
 
             ulist[i]   = opt_results[0];
             Clist[i]   = opt_results[1];
@@ -279,10 +279,10 @@ class ModelPredictiveControl:
             if output:  print("Elapsed Time:\n              ", tlist[i]);
 
             if self.type == 'continuous':
-                qlist[i] = self.modeuler(qlist[i-1], ulist[i][:N])[1][1];
+                xlist[i] = self.modeuler(xlist[i-1], ulist[i][:N])[1][1];
             elif self.type == 'discrete':
-                qlist[i] = self.model(qlist[i-1], ulist[i][:N], params);
+                xlist[i] = self.model(xlist[i-1], ulist[i][:N], params);
 
-            if (callback is not None):  self.params = callback(self, T[i], qlist[i], ulist[i]);
+            if (callback is not None):  self.params = callback(self, T[i], xlist[i], ulist[i]);
 
-        return (T, qlist, ulist, Clist, nlist, brklist, tlist);
+        return (T, xlist, ulist, Clist, nlist, brklist, tlist);
