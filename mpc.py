@@ -96,13 +96,14 @@ class ModelPredictiveControl:
 
         count = 0;
         brk = -2*math.isnan(Cc);
+        # cost function must be positive
         while (Cc > eps):
             # calculate the gradient around the current input
             g = self.gradient(q0, uc);
-            gnorm = math.sqrt(sum([g[i]**2 for i in range(N)]));
+            gnorm = sum([g[i]**2 for i in range(N)]);
 
             # check if gradient-norm is an approx. of zero
-            if (gnorm < eps):
+            if (gnorm < eps**2):
                 brk = 1;
                 break;
 
