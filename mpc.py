@@ -218,7 +218,7 @@ class ModelPredictiveControl:
             if self.type == 'continuous':
                 x[i+1] = self.modeuler(x[i], uc[i])[1][-1];
             elif self.type =='discrete':
-                x[i+1] = self.model(x[i], uc[i], params);
+                x[i+1] = self.discrete(x[i], uc[i])[1];
 
         return x;
 
@@ -253,25 +253,28 @@ class ModelPredictiveControl:
 
         return (T, x);
 
-    # def discrete(self, x0, u, knot_length=0):
-    #     N = self.x_num;
-    #     P = self.PH;
-    #     dt = self.dt;
-    #     params = self.params;
+    def discrete(self, x0, u, knot_length=0):
+        N = self.x_num;
+        P = self.PH;
+        dt = self.dt;
+        params = self.params;
 
-    #     if (knot_length == 0):  k = self.k;
-    #     else:  k = knot_length;
+        if (knot_length == 0):  k = self.k;
+        else:  k = knot_length;
 
-    #     x = [0 for i in range(k+1)];
-    #     xm = [0 for i in range(k+1)];
+        x = [0 for i in range(k+1)];
+        xk = [0 for i in range(k+1)];
 
-    #     x[0] = x0;
-    #     xm[0] = x0;
+        x[0] = x0;
+        xk[0] = x0;
 
-    #     for i in range(k):
-    #         xm[i+1] = self.model(xm[0], u, )
+        for i in range(k):
+            xk[i+1] = self.model(xk[i], u, params);
 
-    #     return (T, x);
+        x = xk[-1];
+        T = [i*dt for i in range(k+1)];
+
+        return (T, x);
 
     def sim_root(self, sim_time, x0, u0, callback=None, saveflow=0, output=0):
         # mpc variables
@@ -317,7 +320,7 @@ class ModelPredictiveControl:
             if self.type == 'continuous':
                 xlist[i] = self.modeuler(xlist[i-1], ulist[i][:N])[1][1];
             elif self.type == 'discrete':
-                xlist[i] = self.model(xlist[i-1], ulist[i][:N], params);
+                xlist[i] = self.discrete(xlist[i-1], ulist[i][:N])[1];
 
             if (callback is not None):  self.params = callback(self, T[i], xlist[i], ulist[i]);
 
