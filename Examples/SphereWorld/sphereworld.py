@@ -109,6 +109,7 @@ def cost(mpc_var, xlist, ulist):
     kx = 150;
     kdx = 5;
     ku = 0.1;
+    kdu = ku/10;
     ko = 50;
 
     C = 0;
@@ -117,9 +118,12 @@ def cost(mpc_var, xlist, ulist):
         C += kx*((x[0] - xd[0])**2 + (x[1] - xd[1])**2);
         C += kdx*(x[2]**2 + x[3]**2);
 
-        if (i != PH):
-            C += ku*(ulist[k]**2 + ulist[k+1]**2);
-            k += Nu;
+        
+        if (i != PH):    C += ku*(ulist[k]**2 + ulist[k+1]**2);
+        # if (i != PH-1):  C += kdu*(ulist[k+Nu] - ulist[k])**2 + kdu*(ulist[k+1+Nu] - ulist[k+1])**2
+        
+        # print(k);
+        k += Nu;
 
         for sphere in sphereworld:
             C += ko/sphere.distance(x);
@@ -140,7 +144,7 @@ if __name__ == "__main__":
     model_type = 'discrete';
 
     x0 = [-1.68, -9.6, 0, 0];
-    xd = [5, 7.5, 0, 0];
+    xd = [5, 7, 0, 0];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
     params = Parameters(x0, xd, PH_length, buffer_length=25);
