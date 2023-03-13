@@ -9,44 +9,68 @@ import matplotlib.patches as patch
 import matplotlib.path as path
 
 
-class Parameters:
-    def __init__(self, x0, fig=None, axs=None, buffer_length=10, pause=1e-3, color='k'):
-        self.pause = pause;
+# hyper parameter
+dt = 0.025;
 
+
+class Parameters:
+    def __init__(self, x0, xd, PH,
+                 fig=None, axs=None,
+                 buffer_length=10, pause=1e-3,
+                 color='k'):
         if axs is None and fig is None:
             self.fig, self.axs = plt.subplots();
         else:
             self.fig = fig;
             self.axs = axs;
 
-        # initialize buffer (trail)
-        self.color = color;
-
-        self.buffer = [x0[:][:2] for i in range(buffer_length)];
-        self.trail_patch = patch.PathPatch(path.Path(self.buffer), color=self.color);
-
-        self.axs.add_patch(self.trail_patch);
-
-        # system specific
-        self.xd = [5, 7, 0, 0];
+        # initialize world
+        self.sphereworld = init_sphereworld();
+        self.xd = xd;
         self.axs.plot(self.xd[0], self.xd[1], color='g', marker='*', markersize=5)
 
         self.sphereworld = init_sphereworld();
         for sphere in self.sphereworld:
             sphere.plot(self.axs);
 
+        # figure scaling
         self.axs.set_xlim(-10,10);
         self.axs.set_ylim(-10,10);
         self.axs.axis('equal');
+        self.axs.grid();
+        self.fig.tight_layout();
 
-    def update(self, t, x):
+        # initialize buffer (trail)
+        self.PH = PH;
+        self.color = color;
+
+        self.buffer = [x0[:2] for i in range(buffer_length)];
+        self.trail_patch = patch.PathPatch(path.Path(self.buffer), color=self.color);
+
+        self.prediction = [x0 for i in range(self.PH+1)];
+        self.future_patch = patch.PathPatch(path.Path(self.buffer), color='C1');
+
+        self.axs.add_patch(self.trail_patch);
+        self.axs.add_patch(self.future_patch);
+
+        self.pause = pause;
+
+    def update(self, t, x, xPH):
         self.trail_patch.remove();
+        self.future_patch.remove();
 
         self.buffer[:-1] = self.buffer[1:];
         self.buffer[-1] = x[:2];
 
-        self.trail_patch = patch.PathPatch(path.Path(self.buffer), fill=0);
+        self.trail_patch = patch.PathPatch(path.Path(self.buffer),
+            color=self.color, fill=0);
+
+        self.prediction = [xPH[i][:2] for i in range(self.PH+1)];
+        self.future_patch = patch.PathPatch(path.Path(self.prediction),
+            color='C1', fill=0);
+
         self.axs.add_patch(self.trail_patch);
+        self.axs.add_patch(self.future_patch);
 
         plt.show(block=0);
         plt.pause(self.pause);
@@ -64,7 +88,6 @@ def init_sphereworld():
 
 
 def model(x, u, _):
-    dt = 0.025;
     c = 0.1;
 
     # discrete steps
@@ -103,24 +126,28 @@ def cost(mpc_var, xlist, ulist):
 
     return C;
 
-def callback(mvar, T, x, u):
-    return mvar.params.update(T, x);
+def callback(mpc_var, T, x, u):
+    xPH = mpc_var.simulate(x, u);
+    return mpc_var.params.update(T, x, xPH);
 
 
 if __name__ == "__main__":
     num_inputs = 2;
-    PH_length = 5;
     num_ssvar = 4;
+    PH_length = 10;
+    knot_length = 1;
+    max_iter = 20;
     model_type = 'discrete';
 
     x0 = [-1.68, -9.6, 0, 0];
+    xd = [5, 7, 0, 0];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
-    params = Parameters(x0, buffer_length=25);
+    params = Parameters(x0, xd, PH_length, buffer_length=25);
 
     mpc_var = ModelPredictiveControl('ngd', model, cost, params, num_inputs,
-        num_ssvar=num_ssvar, PH_length=PH_length, knot_length=1,
-        model_type=model_type);
+        num_ssvar=num_ssvar, PH_length=PH_length, knot_length=knot_length,
+        time_step=dt, max_iter=max_iter, model_type=model_type);
     mpc_var.setAlpha(0.1);
     mpc_var.setMinTimeStep(1);  # arbitrarily large
 
