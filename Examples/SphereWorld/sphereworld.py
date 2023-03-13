@@ -17,7 +17,7 @@ class Parameters:
     def __init__(self, x0, xd, PH,
                  fig=None, axs=None,
                  buffer_length=10, pause=1e-3,
-                 color='k'):
+                 color='k', record=0):
         if axs is None and fig is None:
             self.fig, self.axs = plt.subplots();
         else:
@@ -37,7 +37,6 @@ class Parameters:
         self.axs.set_xlim(-10,10);
         self.axs.set_ylim(-10,10);
         self.axs.axis('equal');
-        self.axs.grid();
         self.fig.tight_layout();
 
         # initialize buffer (trail)
@@ -54,6 +53,10 @@ class Parameters:
         self.axs.add_patch(self.future_patch);
 
         self.pause = pause;
+
+        if record:
+            plt.show(block=0);
+            input("Press enter when ready...");
 
     def update(self, t, x, xPH):
         self.trail_patch.remove();
@@ -107,9 +110,8 @@ def cost(mpc_var, xlist, ulist):
     PH = mpc_var.PH;
 
     kx = 150;
-    kdx = 5;
+    kdx = 4;
     ku = 0.1;
-    kdu = ku/10;
     ko = 50;
 
     C = 0;
@@ -118,12 +120,9 @@ def cost(mpc_var, xlist, ulist):
         C += kx*((x[0] - xd[0])**2 + (x[1] - xd[1])**2);
         C += kdx*(x[2]**2 + x[3]**2);
 
-        
-        if (i != PH):    C += ku*(ulist[k]**2 + ulist[k+1]**2);
-        # if (i != PH-1):  C += kdu*(ulist[k+Nu] - ulist[k])**2 + kdu*(ulist[k+1+Nu] - ulist[k+1])**2
-        
-        # print(k);
-        k += Nu;
+        if (i != PH):
+            C += ku*(ulist[k]**2 + ulist[k+1]**2);
+            k += Nu;
 
         for sphere in sphereworld:
             C += ko/sphere.distance(x);
@@ -140,14 +139,14 @@ if __name__ == "__main__":
     num_ssvar = 4;
     PH_length = 10;
     knot_length = 1;
-    max_iter = 20;
+    max_iter = 10;
     model_type = 'discrete';
 
     x0 = [-1.68, -9.6, 0, 0];
     xd = [5, 7, 0, 0];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
-    params = Parameters(x0, xd, PH_length, buffer_length=25);
+    params = Parameters(x0, xd, PH_length, buffer_length=25, record=1);
 
     mpc_var = ModelPredictiveControl('ngd', model, cost, params, num_inputs,
         num_ssvar=num_ssvar, PH_length=PH_length, knot_length=knot_length,
@@ -165,8 +164,8 @@ if __name__ == "__main__":
     ulist = sim_results[2];
     tlist = sim_results[6];
 
-    # plot calculation speed
-    fig, axs = plt.subplots();
-    axs.plot(T, tlist);
-    axs.set_xlim(-1, max(T)+1)
-    plt.show();
+    # # plot calculation speed
+    # fig, axs = plt.subplots();
+    # axs.plot(T, tlist);
+    # axs.set_xlim(-1, max(T)+1)
+    # plt.show();
