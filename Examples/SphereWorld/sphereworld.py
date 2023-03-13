@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     sim_time = 10;
     sim_results = mpc_var.sim_root(sim_time, x0, uinit,
-        callback=callback, saveflow=1, output=1);
+        callback=callback, output=1, saveflow=0);
     plt.close('all');
 
     T = sim_results[0];
