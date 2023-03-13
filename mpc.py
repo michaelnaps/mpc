@@ -57,7 +57,7 @@ class ModelPredictiveControl:
     def getAlphaMethod(self):
         return self._a_method;
 
-    def solve(self, x0, uinit, output=0):
+    def solve(self, x0, uinit, output=0, saveflow=0):
 
         if (self.solver == 'nno'):
             print("ERROR: nno algorithm is deprecated for MicroPython applications.");
@@ -67,12 +67,12 @@ class ModelPredictiveControl:
         #     elapsed = 1000*(time.time() - t);
         if (self.solver == 'ngd'):
             t = time.time();
-            (u, C, n, brk) = self.ngd(x0, uinit, output);
+            (u, C, n, brk, uflow) = self.ngd(x0, uinit, output, saveflow);
             elapsed = 1000*(time.time() - t);
 
         return (u, C, n, brk, elapsed);
 
-    def ngd(self, x0, uinit, output=0):
+    def ngd(self, x0, uinit, output=0, saveflow=0):
         # MPC constants initialization
         N      = self.u_num;
         P      = self.PH;
@@ -89,6 +89,12 @@ class ModelPredictiveControl:
         x  = self.simulate(x0, uc);
         Cc = self.cost(self, x, uc);
         un = uc;  Cn = Cc;
+
+        if saveflow:
+            uflow = [0 for i in range(imax+2)];
+            uflow[0] = uinit;
+        else:
+            uflow = None;
 
         if output:
             print("Opt. Start:");
@@ -117,6 +123,9 @@ class ModelPredictiveControl:
 
             count += 1;  # iterate the loop counter
 
+            if saveflow:
+                uflow[count] = un;
+
             if (math.isnan(Cn)):
                 brk = -2;
                 break;
@@ -141,7 +150,10 @@ class ModelPredictiveControl:
             # update loop variables
             uc = un;  Cc = Cn;
 
-        return (un, Cn, count, brk);
+        if (saveflow) & (brk == -1):
+            uflow[count+1:] = [uc for i in range(count+1,imax)];
+
+        return (un, Cn, count, brk, uflow);
 
     def gradient(self, x0, u, rownum=1):
         # variable setup
@@ -241,7 +253,7 @@ class ModelPredictiveControl:
 
         return (T, x);
 
-    def sim_root(self, sim_time, x0, u0, callback=None, output=0):
+    def sim_root(self, sim_time, x0, u0, callback=None, saveflow=0, output=0):
         # mpc variables
         N  = self.u_num;
         P  = self.PH;
@@ -268,7 +280,7 @@ class ModelPredictiveControl:
         for i in range(1,Nt):
             if output:  print("\nTime: %0.3f" % (T[i]));
 
-            opt_results = self.solve(xlist[i-1], ulist[i-1], output);
+            opt_results = self.solve(xlist[i-1], ulist[i-1], output, saveflow);
 
             ulist[i]   = opt_results[0];
             Clist[i]   = opt_results[1];
