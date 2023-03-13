@@ -140,7 +140,7 @@ if __name__ == "__main__":
     model_type = 'discrete';
 
     x0 = [-1.68, -9.6, 0, 0];
-    xd = [5, 7, 0, 0];
+    xd = [5, 7.5, 0, 0];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
     params = Parameters(x0, xd, PH_length, buffer_length=25);

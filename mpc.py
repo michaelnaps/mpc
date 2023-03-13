@@ -276,6 +276,7 @@ class ModelPredictiveControl:
         tlist = [0 for i in range(Nt)];
 
         ulist[0] = u0;
+        uguess = u0;
 
         for i in range(1,Nt):
             if output:  print("\nTime: %0.3f" % (T[i]));
@@ -290,10 +291,13 @@ class ModelPredictiveControl:
 
             if output:  print("Elapsed Time:\n              ", tlist[i]);
 
+            uguess[:-N] = ulist[i][N:];
+            uguess[-N:] = [0 for i in range(N)];
+
             if self.type == 'continuous':
-                xlist[i] = self.modeuler(xlist[i-1], ulist[i][:N])[1][1];
+                xlist[i] = self.modeuler(xlist[i-1], uguess)[1][1];
             elif self.type == 'discrete':
-                xlist[i] = self.model(xlist[i-1], ulist[i][:N], params);
+                xlist[i] = self.model(xlist[i-1], uguess, params);
 
             if (callback is not None):  self.params = callback(self, T[i], xlist[i], ulist[i]);
 
