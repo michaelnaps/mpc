@@ -1,14 +1,17 @@
-readme.md currently in progress...
+The work conducted here was initially completed in the Ohio State University undergraduate program with the intent of graduating with research distinction in the department of Mechanical Engineering. The requirements for said distinction was: 1). participation in an undergraduate research forum, 2). completion of research-related coursework and 3). the completion of a comprehensive thesis (published and linked below).
+
+**Thesis:** https://kb.osu.edu/handle/1811/101702
+
+
+___
 
 ## **Introduction**
 
-This library is for the fast implementation of model predictive control (MPC) policies in Python. The code is optimized for fast implementation and testing of nonlinear objective functions and was developed as a part of an undergraduate thesis project at the Ohio State University (linked below).
+The model predictive control (MPC) architecture is a powerful tool in the realm of control theory. It defines the process of looking into future states of a system (as governed by predetermined model equations) and selecting the most appropriate set of controls with respect to some cost/objective function. The set of commands and libraries presented here serves as my personal testing ground for the solutions to the MPC formulation - and is in no way a competitor with more professional libraries (see final note below).
 
-The library is currently being optimized for use in **MicroPython** and thus has been modified so that it does not require a *numpy* dependency - removing the need to install third-party libraries on the microcontroller of interest. The following sections of the *readme* will discuss the MPC policy structure and show demonstrations when applicable.
+The library is currently being optimized for use in **MicroPython** and thus has been modified so that it does not require a **numpy** dependency - removing the need to install third-party libraries on the microcontroller of interest. The **nno** control strategy, as referenced in my undergraduate thesis, can be found on the branch of the library titled **nno_save**. It will be reimplemented in the future. The following sections of the **readme** will discuss the MPC policy structure and show demonstrations when applicable.
 
-**Note:** The class and associated functions shown here are in no way complete. It is my hope to use the model predictive control architecture as a platform for introducing myself to varying optimization strategies. More specifically, I intend to develop the library whenever I have freetime and new ideas.
-
-**Thesis:** https://kb.osu.edu/handle/1811/101702
+**Final Note:** The class and associated functions shown here are in no way complete. It is my hope to use the model predictive control architecture as a platform for introducing myself to varying optimization strategies. More specifically, I intend to develop the library whenever I have freetime and new ideas as inspired by my studies.
 
 
 ___
