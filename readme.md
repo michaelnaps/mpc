@@ -38,15 +38,27 @@ $$
 Where $\mathbb{N}_P$ denotes the set of whole numbers less than, but not equal to, $P$. In other words, $X$ consists of all of the states in the prediction horizon which obey the model, $f$, and start from a given initial position, $x_0$. We can similarly define the set of inputs as the list of controls which move the state forward. That is...
 
 $$
-    U = \lbrace u_0, \dots, u_{P}\ |\ u_k \in \mathbb{U}\ \forall k \in \mathbb{N}_{P} \rbrace
+    U = \lbrace u_0, \dots, u_{P}, 0\ |\ u_k \in \mathbb{U}\ \forall k \in \mathbb{N}_{P} \rbrace
 $$
 
-It is important to note that in some notations $u_k$ is defined as $u_k \in \mathbb{U}(x_k)$; implying that the input is a member of the set of *allowable* controls at a given state, $x_k$. In the applications shown here, the set allowable controls are equivalent at all states - even if some may be considered impossible in the real-world. Particulary, $\mathbb{U} \subseteq \mathbb{U} (x)\ \forall x$.
+A placeholder $0$ is used to represent the control at $k=N_P+1$. It is important to note that in some notations $u_k$ is defined as $u_k \in \mathbb{U}(x_k)$; implying that the input is a member of the set of *allowable* controls at a given state, $x_k$. In the applications shown here, the set allowable controls are equivalent at all states - even if some may be considered impossible in the real-world. Particulary, $\mathbb{U} \subseteq \mathbb{U} (x)\ \forall x$.
 
 
-### 2. Definition of Objective Function Structure
+### 2. Definition of an Objective Function and MPC
 
-**coming soon**
+With the sets $X$ and $U$ defined we can characterize an objective function, $G$, as a collection of costs performed over the prediction horizon.
+
+$$
+    G(X,U) = \lbrace g(x,u)\ |\ \forall x \in X, \forall u \in U \rbrace
+$$
+
+Where the function, $g$, determines the instantaneous cost of a state and its corresponding control injection. The dominant goal in MPC is then to minimize the collective cost contained in $G$.
+
+<!-- $$
+\begin{aligned}
+    \min_{u \in U} && G(X,U)
+\end{aligned}
+$$ -->
 
 
 ___
