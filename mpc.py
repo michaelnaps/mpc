@@ -70,7 +70,7 @@ class ModelPredictiveControl:
             (u, C, n, brk, uflow) = self.ngd(x0, uinit, output, saveflow);
             elapsed = 1000*(time.time() - t);
 
-        return (u, C, n, brk, elapsed);
+        return (u, C, n, brk, elapsed, uflow);
 
     def ngd(self, x0, uinit, output=0, saveflow=0):
         # MPC constants initialization
@@ -297,6 +297,7 @@ class ModelPredictiveControl:
         nlist = [0 for i in range(Nt)];
         brklist = [100 for i in range(Nt)];
         tlist = [0 for i in range(Nt)];
+        glist = [0 for i in range(Nt)];
 
         ulist[0] = u0;
         uguess = u0;
@@ -314,6 +315,7 @@ class ModelPredictiveControl:
             nlist[i]   = opt_results[2];
             brklist[i] = opt_results[3];
             tlist[i]   = opt_results[4];
+            glist[i]   = opt_results[5];
 
             if output:  print("Elapsed Time:\n              ", tlist[i]);
 
@@ -324,4 +326,4 @@ class ModelPredictiveControl:
 
             if (callback is not None):  self.params = callback(self, T[i], xlist[i], ulist[i]);
 
-        return (T, xlist, ulist, Clist, nlist, brklist, tlist);
+        return (T, xlist, ulist, Clist, nlist, brklist, tlist, glist);
