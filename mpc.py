@@ -150,7 +150,7 @@ class ModelPredictiveControl:
             # update loop variables
             uc = un;  Cc = Cn;
 
-        if (saveflow) & (brk == -1):
+        if (saveflow) & (brk != -1):
             uflow[count+1:] = [uc for i in range(count+1,imax)];
 
         return (un, Cn, count, brk, uflow);
