@@ -146,7 +146,7 @@ if __name__ == "__main__":
     xd = [5, 7, 0, 0];
     uinit = [0 for i in range(num_inputs*PH_length)];
 
-    params = Parameters(x0, xd, PH_length, buffer_length=25, record=1);
+    params = Parameters(x0, xd, PH_length, buffer_length=25, record=0);
 
     mpc_var = ModelPredictiveControl('ngd', model, cost, params, num_inputs,
         num_ssvar=num_ssvar, PH_length=PH_length, knot_length=knot_length,
