@@ -8,9 +8,26 @@ The library is currently being optimized for use in **MicroPython** and thus has
 
 **Thesis:** https://kb.osu.edu/handle/1811/101702
 
+**Note:** The class and associated functions shown here are in no way complete. It is my hope to use the model predictive control architecture as a platform for introducing myself to varying optimization strategies. More specifically, I intend to develop the library whenever I have freetime and new ideas.
+
+
 ___
 
 ## **Model Predictive Control**
+
+<!-- First, the generalized MPC will be defined so that each of the following sections can be spent investigating a method of finding the solution to the problem.
+
+Let us first define our model in terms of a discrete linear/nonlinear dynamical system.
+
+$$
+    x_{k+1} = f(x_k, u_k)
+$$
+
+Where $x \in \mathbb{R}^n$ is the state of the system, and $u \in \mathbb{R}^m$ defines the control terms. We can use this standard notation to describe the objective function in terms of the state and cost.
+
+$$
+    g(x, u) = 
+$$ -->
 
 
 ___
