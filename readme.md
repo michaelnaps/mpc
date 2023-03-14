@@ -24,18 +24,18 @@ $$
     x_{k+1} = f(x_k, u_k)
 $$
 
-Where $x \in \mathbb{M} \sub \mathbb{R}^n$ defines the system's state, $u \in \mathbb{U} \sub \mathbb{R}^m$ defines the control injection and the subscript $k$ defines the $k$-th step in a discrete time series. We thus say that $f : \mathbb{M} \rightarrow \mathbb{M}$, or that it defines the translation between states in $\mathbb{M}$.
+Where $x \in \mathbb{M} \subset \mathbb{R}^n$ defines the system's state, $u \in \mathbb{U} \subset \mathbb{R}^m$ defines the control injection and the subscript $k$ defines the $k$-th step in a discrete time series. We thus say that $f : \mathbb{M} \rightarrow \mathbb{M}$, or that it defines the translation between states in $\mathbb{M}$.
 
 We can use this model to characterize a prediction horizon as a series of simulated steps starting at some initial position, $x_0$, and of some predetermined length, $P$. Using this idea, we can write the collection of state terms which make up the prediction horizon using set theory notation...
 
 $$
-    X = \left\{ x_0, \dots, x_{P+1}\ |\ x_0 \in \mathbb{M} \wedge x_{k+1} = f(x_k,u_k)\ \forall k \in \mathbb{N}_P \right\}
+    X = \lbrace x_0, \dots, x_{P+1}\ |\ x_0 \in \mathbb{M} \wedge x_{k+1} = f(x_k,u_k)\ \forall k \in \mathbb{N}_P \rbrace
 $$
 
 Where $\mathbb{N}_P$ denotes the set of whole numbers less than, but not equal to, $P$. In other words, $X$ consists of all of the states in the prediction horizon which obey the model, $f$, and start from a given initial position, $x_0$. We can similarly define the set of inputs as the list of controls which move the state forward. That is...
 
 $$
-    U = \left\{ u_0, \dots, u_{P}\ |\ u_k \in \mathbb{U}\ \forall k \in \mathbb{N}_{P} \right\}
+    U = \lbrace u_0, \dots, u_{P}\ |\ u_k \in \mathbb{U}\ \forall k \in \mathbb{N}_{P} \rbrace
 $$
 
 It is important to note that in some notations $u_k$ is defined as $u_k \in \mathbb{U}(x_k)$; implying that the input is a member of the set of *allowable* controls at a given state, $x_k$. In the applications shown here, the set allowable controls are equivalent at all states - even if some may be considered impossible in the real-world. Particulary, $\mathbb{U} \subseteq \mathbb{U} (x)\ \forall x$.
