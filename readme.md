@@ -44,6 +44,11 @@ $$
 It is important to note that in some notations $u_k$ is defined as $u_k \in \mathbb{U}(x_k)$; implying that the input is a member of the set of *allowable* controls at a given state, $x_k$. In the applications shown here, the set allowable controls are equivalent at all states - even if some may be considered impossible in the real-world. Particulary, $\mathbb{U} \subseteq \mathbb{U} (x)\ \forall x$.
 
 
+### 2. Definition of Objective Function Structure
+
+**coming soon**
+
+
 ___
 
 ## **Gradient Descent**
