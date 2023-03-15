@@ -91,7 +91,7 @@ class ModelPredictiveControl:
         un = uc;  Cn = Cc;
 
         if saveflow:
-            uflow = [0 for i in range(imax+2)];
+            uflow = [0 for i in range(imax+1)];
             uflow[0] = uinit;
         else:
             uflow = None;
@@ -139,7 +139,7 @@ class ModelPredictiveControl:
                     print("              ", [un[i+j] for j in range(N)]);
 
             # break conditions
-            if (count > imax):
+            if (count > imax-1):
                 brk = -1;
                 break;
 
