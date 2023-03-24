@@ -65,27 +65,36 @@ ___
 
 ## **Gradient Descent**
 
-**coming soon**
+**description coming soon**
 
 
 ___
 
 ## **Nonlinear Newton's Optimization**
 
-**coming soon**
+**description coming soon**
 
 
 ___
 
 ## **Application:** Sphere World Environment
 
-**coming soon**
+**description coming soon**
 
 <p align='center'>
     <img src=./Examples/.figures/sphereworld.gif width=450>
 </p>
 
 
+___
+
+## **Application:** Differential Drive Robot
+
+<p align='center'>
+    <img src=./Examples/.figures/donald.gif width=450>
+</p>
+
+___
 **NOTE:** If a Hessian matrix is block diagonal then its inverse can be found by inverting each of its elements. In other words,
 
 $$
