@@ -5,6 +5,21 @@
 import time
 import math
 
+def ifdm(cost, x0, u, h=1e-3):
+    Nu = len(u);
+    dC = [0 for i in range(Nu)];
+
+    for i in range(Nu):
+        un1 = [u[j] - (i==j)*h for j in range(Nu)];
+        up1 = [u[j] + (i==j)*h for j in range(Nu)];
+
+        Cn1 = cost(x0, un1);
+        Cp1 = cost(x0, up1);
+
+        dC[i] = (Cp1 - Cn1)/(2*h)
+
+    return dC;
+
 class ModelPredictiveControl:
     def __init__(self, solver, modelFunction, costFunction,
             user_params, num_inputs, num_ssvar=1,
@@ -59,12 +74,11 @@ class ModelPredictiveControl:
 
     def solve(self, x0, uinit, output=0, saveflow=0):
 
-        if (self.solver == 'nno'):
-            print("ERROR: nno algorithm is deprecated for MicroPython applications.");
-            return;
+        # if (self.solver == 'fdp'):
         #     t = time.time();
-        #     (u, C, n, brk) = self.nno(x0, uinit, output);
+        #     results = self.fdp(x0, uinit, PH=self.PH, output=output);
         #     elapsed = 1000*(time.time() - t);
+        #     return results, elapsed;
         if (self.solver == 'ngd'):
             t = time.time();
             (u, C, n, brk, uflow) = self.ngd(x0, uinit, output, saveflow);
@@ -155,12 +169,44 @@ class ModelPredictiveControl:
 
         return (un, Cn, count, brk, uflow);
 
+    def fdp(self, tcost, x0, uinit, PH=-1, output=0):
+        # variable setup
+        Nu = self.u_num;
+        h = self.h;
+        a = self._alpha;
+        eps = self.zero;
+        imax = self.n_max;
+
+        if PH == -1:
+            return self.fdp(x0, uinit, self.PH, output);
+
+        if PH == 1:
+            # period cost + terminal cost
+            jcost = lambda x,u: self.cost(x,u) + tcost( self.model(x,u,self) );
+
+            un = uinit;
+            gn = ifdm(jcost, x0, un, h=h);
+            gnorm = sum([gn[i]**2 for i in range(PH)]);
+
+            count = 0;
+            while gnorm > eps:
+                un = [un[i] - a*gn[i] for i in range(Nu)]
+                gn = ifdm(jcost, x0, un, h=h);
+                gnorm = sum([gn[i]**2 for i in range(Nu)]);
+
+                if count > imax-1:
+                    break;
+
+            Cn = jcost(x0, un);
+            return self.model(x0, un, self), un, Cn;
+
+        return (un, Cn);
+
     def gradient(self, x0, u, rownum=1):
         # variable setup
         N = self.u_num*self.PH;
         h = self.h;
         g = [0 for i in range(N)];
-        params = self.params;
 
         for i in range(rownum-1, N):
             un1 = [u[j] - (i==j)*h for j in range(N)];
