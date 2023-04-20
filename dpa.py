@@ -20,6 +20,8 @@ class DynamicProgramming:
 
         self.zero = appx_zero;
         self.step = grad_step;
+
+        # if nmax is -1 -> no iteration cap
         self.nmax = max_iter;
 
         self._alpha = 1;
@@ -29,52 +31,54 @@ class DynamicProgramming:
         return;
 
     def forward(self, x0, uinit, N=None, output=0):
-        # variable setup
-        Nu = self.Nu;
-        h = self.step;
-        a = self._alpha;
-        zero = self.zero;
-        nmax = self.nmax;
-
+        # if N (prediction horizon) not given
         if N is None:
+            # start alg. with class N
             return self.forward(x0, uinit, self.N, output);
 
+        # if N = 1 end recursion by minimizing with terminal cost
         if N == 1:
-            # period cost + terminal cost
-            cost = lambda x,u: self.pcost(x,u) + self.tcost( self.model(x,u) );
-
-            un = uinit;
-            gn = self.fdm(cost, x0, un, h=h);
-            gnorm = sum([gn[i]**2 for i in range(N)]);
-
-            count = 0;
-            while gnorm > zero:
-                un = [un[i] - a*gn[i] for i in range(Nu)]
-                gn = self.fdm(cost, x0, un, h=h);
-                gnorm = sum([gn[i]**2 for i in range(Nu)]);
-
-                if count > nmax-1:
-                    break;
-
             Jn = cost(x0, un);  # cost-to-go
             return un, Jn, self.model(x0, un);
 
         return (un, Jn);
 
-    def gradientDescent(self, cost, x0, u, h=1e-3):
-        pass;
+    def minimize(self, cost, uinit, h=1e-3):
+        un = [uinit[i] for i in range(self.Nu)];
+        gn = self.fdm(cost, un, h=self.step);
+        gnorm = sum([gn[i]**2 for i in range(self.Nu)]);
 
-    def fdm(self, cost, x0, u, h=1e-3):
-        Nu = len(u);
-        dJ = [0 for i in range(Nu)];
+        # gradient descent loop
+        count = 1;
+        while gnorm > self.zero**2:
+            un = [un[i] - self._alpha*gn[i] for i in range(self.Nu)];
+            gn = self.fdm(cost, un, h=self.step);
+            gnorm = sum([gn[i]**2 for i in range(self.Nu)]);
 
-        for i in range(Nu):
-            un1 = [u[j] - (i==j)*h for j in range(Nu)];
-            up1 = [u[j] + (i==j)*h for j in range(Nu)];
+            count += 1;
+            if (self.nmax is not -1) and (count > self.nmax-1):  # iteration limit
+                print('WARNING: Iteration break in DynamicProgramming.minimize()');
+                break;
 
-            Jn1 = cost(x0, up1);
-            Jp1 = cost(x0, up1);
+        return un, cost(un);
+
+    def fdm(self, cost, u, h=1e-3):
+        dJ = [0 for i in range(self.Nu)];
+
+        print(u);
+
+        for i in range(self.Nu):
+            un1 = [u[j] - (i==j)*h for j in range(self.Nu)];
+            up1 = [u[j] + (i==j)*h for j in range(self.Nu)];
+
+            Jn1 = cost(un1);
+            Jp1 = cost(up1);
+
+            print('---');
+            print(Jn1, Jp1);
 
             dJ[i] = (Jp1 - Jn1)/(2*h);
+
+            print(dJ[i]);
 
         return dJ;
