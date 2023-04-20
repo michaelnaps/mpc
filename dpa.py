@@ -6,55 +6,75 @@ import math
 import time
 
 class DynamicProgramming:
-    def __init__(self, pcost, tcost, N):
+    def __init__(self, pcost, tcost, model, N, Nx, Nu,
+        params=None, max_iter=10,
+        appx_zero=1e-6, grad_step=1e-3):
         self.pcost = pcost;
         self.tcost = tcost;
+        self.model = model;
+        self.params = params;
+
         self.N = N;
+        self.Nx = Nx;
+        self.Nu = Nu;
 
-    def fdp(self, tcost, x0, uinit, PH=-1, output=0):
+        self.zero = appx_zero;
+        self.step = grad_step;
+        self.nmax = max_iter;
+
+        self._alpha = 1;
+
+    def setAlpha(self, a):
+        self._alpha = a;
+        return;
+
+    def forward(self, x0, uinit, N=None, output=0):
         # variable setup
-        Nu = self.u_num;
-        h = self.h;
+        Nu = self.Nu;
+        h = self.step;
         a = self._alpha;
-        eps = self.zero;
-        imax = self.n_max;
+        zero = self.zero;
+        nmax = self.nmax;
 
-        if PH == -1:
-            return self.fdp(x0, uinit, self.PH, output);
+        if N is None:
+            return self.forward(x0, uinit, self.N, output);
 
-        if PH == 1:
+        if N == 1:
             # period cost + terminal cost
-            jcost = lambda x,u: self.cost(x,u) + tcost( self.model(x,u,self) );
+            cost = lambda x,u: self.pcost(x,u) + self.tcost( self.model(x,u) );
 
             un = uinit;
-            gn = ifdm(jcost, x0, un, h=h);
-            gnorm = sum([gn[i]**2 for i in range(PH)]);
+            gn = self.fdm(cost, x0, un, h=h);
+            gnorm = sum([gn[i]**2 for i in range(N)]);
 
             count = 0;
-            while gnorm > eps:
+            while gnorm > zero:
                 un = [un[i] - a*gn[i] for i in range(Nu)]
-                gn = ifdm(jcost, x0, un, h=h);
+                gn = self.fdm(cost, x0, un, h=h);
                 gnorm = sum([gn[i]**2 for i in range(Nu)]);
 
-                if count > imax-1:
+                if count > nmax-1:
                     break;
 
-            Cn = jcost(x0, un);
-            return self.model(x0, un, self), un, Cn;
+            Jn = cost(x0, un);  # cost-to-go
+            return un, Jn, self.model(x0, un);
 
-        return (un, Cn);
+        return (un, Jn);
 
-    def ifdm(cost, x0, u, h=1e-3):
+    def gradientDescent(self, cost, x0, u, h=1e-3):
+        pass;
+
+    def fdm(self, cost, x0, u, h=1e-3):
         Nu = len(u);
-        dC = [0 for i in range(Nu)];
+        dJ = [0 for i in range(Nu)];
 
         for i in range(Nu):
             un1 = [u[j] - (i==j)*h for j in range(Nu)];
             up1 = [u[j] + (i==j)*h for j in range(Nu)];
 
-            Cn1 = cost(x0, un1);
-            Cp1 = cost(x0, up1);
+            Jn1 = cost(x0, up1);
+            Jp1 = cost(x0, up1);
 
-            dC[i] = (Cp1 - Cn1)/(2*h)
+            dJ[i] = (Jp1 - Jn1)/(2*h);
 
-        return dC;
+        return dJ;
