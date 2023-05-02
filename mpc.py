@@ -303,8 +303,9 @@ class ModelPredictiveControl:
         for i in range(1,Nt):
             if output:  print("\nTime: %0.3f" % (T[i]));
 
-            uguess[:-N] = ulist[i-1][N:];
-            uguess[-N:] = [0 for i in range(N)];
+            # uguess[:-N] = ulist[i-1][N:];
+            # uguess[-N:] = [0 for i in range(N)];
+            uguess = ulist[i-1];
 
             opt_results = self.solve(xlist[i-1], uguess, output, saveflow);
 
