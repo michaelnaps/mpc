@@ -18,6 +18,13 @@ ___
 
 ## **Model Predictive Control**
 
+Overall, the MPC decision scheme follows the diagram below.
+
+<p align='center'>
+    <img src=./Examples/.figures/mpc_decision_structure.png width=450>
+</p>
+
+
 ### 1. *Definition of a Model and Prediction Horizon*
 First, the generalized MPC will be defined so that each of the following sections can be spent investigating a method of finding the solution to the problem.
 
