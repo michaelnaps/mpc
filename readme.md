@@ -18,47 +18,60 @@ ___
 
 ## **Model Predictive Control**
 
-### 1. Definition of a Model and Prediction Horizon
+### 1. *Definition of a Model and Prediction Horizon*
 First, the generalized MPC will be defined so that each of the following sections can be spent investigating a method of finding the solution to the problem.
 
 Let us first define our model in terms of a discrete linear/nonlinear dynamical system.
 
 $$
-    x_{k+1} = f(x_k, u_k)
+    x_{k+1} = F(x_k, u_k)
 $$
 
-Where $x \in \mathbb{M} \subset \mathbb{R}^n$ defines the system's state, $u \in \mathbb{U} \subset \mathbb{R}^m$ defines the control injection and the subscript $k$ defines the $k$-th step in a discrete time series. We thus say that $f : \mathbb{M} \rightarrow \mathbb{M}$, or that it defines the translation between states in $\mathbb{M}$.
+Where $x \in \mathbb{M} \subset \mathbb{R}^n$ defines the system's state, $u \in \mathbb{U} \subset \mathbb{R}^m$ defines the control injection and the subscript $k$ defines the $k$-th step in a discrete time series. We thus say that $F : \mathbb{M} \rightarrow \mathbb{M}$, or that it defines the translation between states in $\mathbb{M}$.
 
 We can use this model to characterize a prediction horizon as a series of simulated steps starting at some initial position, $x_0$, and of some predetermined length, $P$. Using this idea, we can write the collection of state terms which make up the prediction horizon using set theory notation...
 
 $$
-    X = \lbrace x_0, \dots, x_{P+1}\ |\ x_0 \in \mathbb{M} \wedge x_{k+1} = f(x_k,u_k)\ \forall k \in \mathbb{N}_P \rbrace
+    X = \{ x_0 \wedge x_{k+1} : x_{k+1} = F(x_k, u_k)\ \forall k < P : k \in \mathbb{Z} \}
 $$
 
-Where $\mathbb{N}_P$ denotes the set of whole numbers less than, but not equal to, $P$. In other words, $X$ consists of all of the states in the prediction horizon which obey the model, $f$, and start from a given initial position, $x_0$. We can similarly define the set of inputs as the list of controls which move the state forward. That is...
+Where $X$ consists of all of the states in the prediction horizon which obey the model, $F$, and start from a given initial position, $x_0$. We can similarly define the set of inputs as the list of controls which move the state forward.
 
 $$
-    U = \lbrace u_0, \dots, u_{P}, 0\ |\ u_k \in \mathbb{U}\ \forall k \in \mathbb{N}_{P} \rbrace
+    U = \{ u_k : u_k \in \mathbb{R}^m\ \forall k < P : k \in \mathbb{Z} \}.
 $$
 
 A placeholder $0$ is used to represent the control at $k=N_P+1$. It is important to note that in some notations $u_k$ is defined as $u_k \in \mathbb{U}(x_k)$; implying that the input is a member of the set of *allowable* controls at a given state, $x_k$. In the applications shown here, the set allowable controls are equivalent at all states - even if some may be considered impossible in the real-world. Particulary, $\mathbb{U} \subseteq \mathbb{U} (x)\ \forall x$.
 
 
-### 2. Definition of an Objective Function and MPC
+### 2. *Definition of Period and Terminal Costs*
 
-With the sets $X$ and $U$ defined we can characterize an objective function, $G$, as a collection of costs performed over the prediction horizon.
+Using the aforementationed sets, a cost function can be defined which assigns a 'score' to each of the *period* costs, or the state and its associated input, as well as the *terminal* cost, or the final state evaluated at the end of the prediction horizon.
 
 $$
-    G(X,U) = \lbrace g(x,u)\ |\ \forall x \in X, \forall u \in U \rbrace
+    \begin{aligned}
+        g(x_k,u_k) = \text{period cost} \\
+        g_P(x_P) = \text{terminal cost}
+    \end{aligned}
 $$
 
-Where the function, $g$, determines the instantaneous cost of a state and its corresponding control injection. The dominant goal in MPC is then to minimize the collective cost contained in $G$.
+Where the functions $g_k, g_P \in \mathbb{R}$ are defined before the start of the controller, making the set of all prediction horizon costs
 
-<!-- $$
-\begin{aligned}
-    \min_{u \in U} && G(X,U)
-\end{aligned}
-$$ -->
+$$
+    G = \{ g_k(x_k, u_k) \wedge g_P(x_P) : \forall x_k \in X, u_k \in U \}.
+$$
+
+Where $G$ is simply used here to represent the set of costs which exist for the sets defined by $X$ and $U$. From this, it is possible to define an optimization problem over the entire prediction horizon.
+
+### 3. *Definition of the Optimization Problem*
+
+The optimization now becomes a minimization of the total cost over the $P$-prediction horizons.
+
+$$
+    X^*, U^* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_k, u_k) + g_P(x_P) \right)
+$$
+
+Where $U^*$ represents the set of optimal policies as defined by the cost function solved for over the prediction horizon, and $X^*$ is the optimal state predictions as accumulated through $U^*$.
 
 
 ___
