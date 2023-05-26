@@ -39,13 +39,13 @@ Where $x \in \mathbb{M} \subset \mathbb{R}^n$ defines the system's state, $u \in
 We can use this model to characterize a prediction horizon as a series of simulated steps starting at some initial position, $x_0$, and of some predetermined length, $P$. Using this idea, we can write the collection of state terms which make up the prediction horizon using set theory notation...
 
 $$
-    X = \{ x_0 \wedge x_{k+1} : x_{k+1} = F(x_k, u_k)\ \forall k < P : k \in \mathbb{Z} \}
+    X = \\{ x_0 \wedge x_{k+1} : x_{k+1} = F(x_k, u_k)\ \forall k < P : k \in \mathbb{Z} \\}
 $$
 
 Where $X$ consists of all of the states in the prediction horizon which obey the model, $F$, and start from a given initial position, $x_0$. We can similarly define the set of inputs as the list of controls which move the state forward.
 
 $$
-    U = \{ u_k : u_k \in \mathbb{R}^m\ \forall k < P : k \in \mathbb{Z} \}.
+    U = \\{ u_k : u_k \in \mathbb{R}^m\ \forall k < P : k \in \mathbb{Z} \\}.
 $$
 
 A placeholder $0$ is used to represent the control at $k=N_P+1$. It is important to note that in some notations $u_k$ is defined as $u_k \in \mathbb{U}(x_k)$; implying that the input is a member of the set of *allowable* controls at a given state, $x_k$. In the applications shown here, the set allowable controls are equivalent at all states - even if some may be considered impossible in the real-world. Particulary, $\mathbb{U} \subseteq \mathbb{U} (x)\ \forall x$.
@@ -65,7 +65,7 @@ $$
 Where the functions $g_k, g_P \in \mathbb{R}$ are defined before the start of the controller, making the set of all prediction horizon costs
 
 $$
-    G = \{ g_k(x_k, u_k) \wedge g_P(x_P) : \forall x_k \in X, u_k \in U \}.
+    G = \\{ g_k(x_k, u_k) \wedge g_P(x_P) : \forall x_k \in X, u_k \in U \\}.
 $$
 
 Where $G$ is simply used here to represent the set of costs which exist for the sets defined by $X$ and $U$. From this, it is possible to define an optimization problem over the entire prediction horizon.
@@ -75,7 +75,7 @@ Where $G$ is simply used here to represent the set of costs which exist for the 
 The optimization now becomes a minimization of the total cost over the $P$-prediction horizons.
 
 $$
-    X^*, U^* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_k, u_k) + g_P(x_P) \right)
+    X^\*, U^\* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_k, u_k) + g_P(x_P) \right)
 $$
 
 Where $U^*$ represents the set of optimal policies as defined by the cost function solved for over the prediction horizon, and $X^*$ is the optimal state predictions as accumulated through $U^*$.
