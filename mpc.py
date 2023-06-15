@@ -10,7 +10,7 @@ class ModelPredictiveControl:
             user_params, num_inputs, num_ssvar=1,
             PH_length=1, knot_length=1, time_step=0.025,
             appx_zero=1e-6, step_size=1e-3, max_iter=10,
-            model_type='continuous'):
+            model_type='discrete'):
         self.solver = solver;
         self.model  = modelFunction;
         self.cost   = costFunction;
