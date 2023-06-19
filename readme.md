@@ -2,7 +2,7 @@ The work conducted here was initially completed in the Ohio State University und
 
 **Thesis:** https://kb.osu.edu/handle/1811/101702
 
-This is a test
+
 ___
 
 ## **Introduction**
