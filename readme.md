@@ -11,7 +11,7 @@ The model predictive control (MPC) architecture is a powerful tool in the realm 
 
 The library is currently being optimized for use in **MicroPython** and thus has been modified so that it does not require a **numpy** dependency - removing the need to install third-party libraries on the microcontroller of interest. The **nno** control strategy, as referenced in my undergraduate thesis, can be found on the branch of the library titled **nno_save**. It will be reimplemented in the future. The following sections of the **readme** will discuss the MPC policy structure and show demonstrations when applicable.
 
-**Final Note:** The class and associated functions shown here are in no way complete. It is my hope to use the model predictive control architecture as a platform for introducing myself to varying optimization strategies. More specifically, I intend to develop the library whenever I have freetime and new ideas as inspired by my studies.
+**Final Note:** The class and associated functions shown here are in no way complete. It is my hope to use the model predictive control architecture as a platform for introducing myself to varying optimization strategies. More specifically, I intend to develop the library whenever I have freetime and new ideas as inspired by my studies. Recently, I have identified that the library's biggest flaw is the consolidation of the entire process into a single MPC class. In the future, I hope to break the MPC class into sub-classes, helper functions, etc. for better generalization to other problems.
 
 
 ___
