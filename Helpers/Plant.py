@@ -7,7 +7,8 @@ def TaylorMethod(F, x0, u=None, dt=1e-3):
     return x0 + dt*F( x0, u );
 
 class Cost:
-    pass;
+    def __init__(self, g):
+        self.cost = g;
 
 class Model:
     def __init__(self, F, dt=1e-3,
