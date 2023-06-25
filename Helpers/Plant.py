@@ -54,5 +54,5 @@ class Model:
         # set time-step for reference
         self.dt = dt;
 
-    def step(self, x0, u=None):
+    def prop(self, x0, u=None):
         return self.model( x0, u );
