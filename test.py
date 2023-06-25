@@ -14,7 +14,7 @@ def VanDerPol(x0, u=None):
 
 def VanDerPolCost(x, u=None):
     C = 0;
-    for xi in x[:,0]:
+    for xi in x:
         C += xi**2;
     return C;
 
@@ -25,27 +25,44 @@ if __name__ == '__main__':
 
     # initial conditions
     Nx = 2;
-    x = np.array( [[1],[0]] );  # unnecessary, but...
+    x = 2*np.random.rand(Nx,1)-1;  # unnecessary, but...
 
     # time variables
-    T = 100;  Nt = round( T/mvar.dt ) + 1;
+    T = 10;  Nt = round( T/mvar.dt ) + 1;
     tList = [ [i*mvar.dt for i in range( Nt )] ];
 
     # step for length of sim
     xList = np.empty( (Nx,Nt) );
     cList = np.empty( (1,Nt) );
+    gList = np.empty( (Nx,Nt) );
     xList[:,0] = x[:,0];
     cList[:,0] = cvar.cost( x );
+    gList[:,0] = cvar.grad( x )[:,0];
     for i in range( Nt-1 ):
         x = mvar.step( x );
         c = cvar.cost( x );
+        g = cvar.grad( x );
         xList[:,i+1] = x[:,0];  # save step
         cList[:,i+1] = c;
+        gList[:,i+1] = g[:,0];
 
     # plot results
-    fig, axs = plt.subplots(1,2);
+    Np = 3;
+    fig, axs = plt.subplots(1,Np);
+
     axs[0].plot( xList[0], xList[1] );
     axs[0].set_title('Model');
+
     axs[1].plot( tList[0], cList[0] );
     axs[1].set_title('Cost');
+
+    print(gList);
+
+    axs[2].plot( gList[0], gList[1] );
+    axs[2].set_title('Gradient');
+
+    for i in range( Np ):
+        axs[i].grid(1);
+        axs[i].axis('equal');
+
     plt.show();
