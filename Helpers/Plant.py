@@ -5,7 +5,7 @@ import numpy as np
 
 def fdm2c(g, x, h=1e-6):
     # initialize parameters
-    Nx = len( x );          # dimension of input
+    Nx = len( x );        # dimension of input
     Ng = len( g(x) );     # dimension of output
 
     # calculate derivative at each input
@@ -17,7 +17,7 @@ def fdm2c(g, x, h=1e-6):
         gn1 = g( xn1 );
         gp1 = g( xp1 );
 
-        grad[i] = (gp1 - gn1)/(2*h);
+        grad[i,:] = (gp1 - gn1).reshape(Ng,)/(2*h);
 
     return grad;
 
@@ -39,7 +39,7 @@ class Cost:
 
         # set hessian function
         if hessian is None:
-            self.hess = lambda x: fdm2c( self.gradient, x );
+            self.hess = lambda x: fdm2c( self.grad, x );
         else:
             self.hess = hessian;
 

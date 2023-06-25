@@ -45,6 +45,8 @@ if __name__ == '__main__':
         xList[:,i+1] = x[:,0];  # save step
         cList[:,i+1] = c;
         gList[:,i+1] = g[:,0];
+        print( cvar.hess( x ) );
+        print( '---------' );
 
     # plot results
     Np = 3;
@@ -55,8 +57,6 @@ if __name__ == '__main__':
 
     axs[1].plot( tList[0], cList[0] );
     axs[1].set_title('Cost');
-
-    print(gList);
 
     axs[2].plot( gList[0], gList[1] );
     axs[2].set_title('Gradient');
