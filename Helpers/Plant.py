@@ -21,7 +21,6 @@ def fdm2c(g, x, h=1e-6):
 
     return grad;
 
-
 def TaylorMethod(F, x0, u=None, dt=1e-3):
     return x0 + dt*F( x0, u );
 
