@@ -34,9 +34,6 @@ if __name__ == '__main__':
     T = 10;  Nt = round( T/mvar.dt ) + 1;
     tList = [ [i*mvar.dt for i in range( Nt )] ];
 
-    # # print gradient descent?
-    # print( ovar.ngd( x ) );
-
     # step for length of sim
     xList = np.empty( (Nx,Nt) );
     cList = np.empty( (1,Nt) );
