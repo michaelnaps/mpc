@@ -3,27 +3,41 @@ from Helpers.Plant import *
 
 class Optimizer( Cost ):
     def __init__(self, g, eps=1e-6, alpha=1e-3,
-            gradient=None, hessian=None,):
+            solver='ngd',
+            gradient=None, hessian=None):
+        # inherit cost function class parameters
         Cost.__init__( self, g,
                 gradient=gradient, hessian=hessian );
+
+        # tolerance for zero and gradient descent step-size
         self.eps = eps;  # zero-approximation
         self.alpha = alpha;
 
-    def ngd(self, xinit, verbose=0):
-        x = xinit.copy();
+        # set solution step function
+        self.setSolverMethod( solver );
+
+    def setSolverMethod(self, solver):
+        self.solver = solver;
+        if self.solver == 'ngd':
+            self.step = lambda x, g: x - self.alpha*g;
+        if self.solver == 'nno':
+            self.step = None;  # not setup
+
+    def solve(self, xinit, verbose=0):
+        x = xinit.copy();  # copy the initial guess
         g = self.grad( x );
         gnorm = np.linalg.norm( g );
 
         while gnorm > self.eps:
-            x = x - self.alpha*g;
+            x = self.step( x, g );
             g = self.grad( x );
             gnorm = np.linalg.norm( g );
 
-            if output:
+            if verbose:
                 # print("Gradient:  ", g);
                 print("|g|:          ", gnorm);
                 print("New Cost:     ", self.cost( x ));
-                print("New Input:\n\t"  , x);
+                print("New Input:\n"  , x);
 
         return x;
 

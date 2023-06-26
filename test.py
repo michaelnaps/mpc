@@ -4,12 +4,15 @@ import matplotlib.pyplot as plt
 from Helpers.Plant import *
 from Helpers.Optimizer import *
 
+# hyper parameter(s)
+verbose = 0;
+
 # model an autonomous system
 def VanDerPol(x, u=None):
     mu = 2.0;
     dx = np.array( [
         x[1],
-        mu*(1-x[0]**2)*x[1] - x[0]
+        mu*(1 - x[0]**2)*x[1] - x[0]
     ] );
     return dx;
 
@@ -19,7 +22,7 @@ def VanDerPolCost(x, u=None):
 
 if __name__ == '__main__':
     # model variable
-    mvar = Model( VanDerPol );
+    mvar = Model( VanDerPol, model_type='continuous' );
     cvar = Cost( VanDerPolCost );
     ovar = Optimizer( VanDerPolCost );
 
@@ -42,14 +45,23 @@ if __name__ == '__main__':
     cList[:,0] = cvar.cost( x );
     gList[:,0] = cvar.grad( x )[:,0];
     for i in range( Nt-1 ):
+        # instantaneous variables (unnecessary)
         x = mvar.prop( x );
         c = cvar.cost( x );
         g = cvar.grad( x );
-        xList[:,i+1] = x[:,0];  # save step
+
+        # save step
+        xList[:,i+1] = x[:,0];
         cList[:,i+1] = c;
         gList[:,i+1] = g[:,0];
-        # print( cvar.hess( x ) );
-        # print( '------------' );
+
+        if verbose:
+            print( x );
+            print( c );
+            print( g );
+            print( ovar.grad( x ) );
+            print( ovar.solve( x ) );
+            print( '------------' );
 
     # plot results
     Np = 3;
