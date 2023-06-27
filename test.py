@@ -17,7 +17,7 @@ def VanDerPol(x, u=None):
     ] );
     return dx;
 
-def VanDerPolCost(x, u=None):
+def VanDerPolCost(x):
     C = x[0]**2 + x[1]**2;
     return C;
 
@@ -52,9 +52,10 @@ if __name__ == '__main__':
         c = cvar.cost( x );
         g = cvar.grad( x );
 
-        # update vehicle
-        vhc.update( x );
-        vhc.draw();
+        if not verbose:
+            # update vehicle
+            vhc.update( x );
+            vhc.draw();
 
         # save step
         xList[:,i+1] = x[:,0];

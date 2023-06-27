@@ -13,22 +13,31 @@ class Optimizer( Cost ):
         # set solution step function
         self.setStepMethod( solver );
 
+    def setObjectiveFunction(self, g):
+        self.g = g;
+
+        # Return instance of self.
+        return self;
+
     def setStepMethod(self, solver):
         self.solver = solver;
         if self.solver == 'ngd':
-            self.step = lambda x, g: x - self.alpha*g;
+            self.step = lambda x, dg: x - self.alpha*dg;
         if self.solver == 'nno':
             self.step = None;  # not setup
 
+        # Return instance of self.
+        return self;
+
     def solve(self, xinit, verbose=0):
         x = xinit.copy();  # copy the initial guess
-        g = self.grad( x );
-        gnorm = np.linalg.norm( g );
+        dg = self.grad( x );
+        gnorm = np.linalg.norm( dg );
 
         while gnorm > self.eps:
-            x = self.step( x, g );
-            g = self.grad( x );
-            gnorm = np.linalg.norm( g );
+            x = self.step( x, dg );
+            dg = self.grad( x );
+            gnorm = np.linalg.norm( dg );
 
             if verbose:
                 # print("Gradient:  ", g);
@@ -36,10 +45,18 @@ class Optimizer( Cost ):
                 print("New Cost:     ", self.cost( x ));
                 print("New Input:\n"  , x);
 
+        # Return solution.
         return x;
 
+# Class: ModelPredictiveControl()
+# Assumptions:
+#   1). Cost is a function of the state AND input:
+#       c = g(x,u)
 class ModelPredictiveControl( Model, Optimizer ):
-    def __init__(self, F, g, dt=1e-3, model_type='discrete'):
+    def __init__(self, F, g, N=10, dt=1e-3, model_type='discrete'):
+        # save model to inherited class
         Model.__init__( self, F,
                 dt=dt, model_type=model_type );
-        Optimizer.__init__(self, g);
+
+        # save the MPC cost function
+        self.mpcost = g;
