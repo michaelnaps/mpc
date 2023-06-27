@@ -8,9 +8,9 @@ from matplotlib import path
 # Assumptions: Model is discrete.
 class Vehicle2D:
     def __init__(self, F, x0,
-            fig=None, axs=None,
+            fig=None, axs=None, zorder=10,
             vehicle_color='yellowgreen',
-            draw_tail=1, tail_length=10,
+            draw_tail=1, tail_length=100,
             grid=1, pause=1e-3):
         # create figure if not given
         if fig is None and axs is None:
@@ -25,19 +25,72 @@ class Vehicle2D:
         self.axs.grid( grid );
 
         # vehicle parameters
-        self.color = vhc_color;
+        self.color = vehicle_color;
         self.edge_color = 'k';
-        self.zorder = 1;  # needed when multiple vhc on one plot
+        self.zorder = zorder;  # needed when multiple vhc present
         self.label = None;
-        self.radius = 2.5;
+        self.radius = 0.5;
 
         # tail parameters
         self.draw_tail = draw_tail;
         self.Nt = tail_length;
+        self.linewidth = 2;
+        self.linestyle = None;
 
         # simulation pause
         self.pause = pause;
 
         # draw vehicle and tail
         self.drawVehicle( x0 );
-        self.drawTail( np.kron( x0,np.ones( (self.Nt,1) ) ) );
+        if self.draw_tail:
+            self.drawTail( np.kron( x0,np.ones( (1,self.Nt) ) ) );
+
+    def draw(self, block=0):
+        # show plot and pause
+        plt.show( block=block );
+        plt.pause( self.pause );
+
+        # Return instance of self.
+        return self;
+
+    def update(self, x):
+        # update vehicle location
+        self.body.remove();
+        self.drawVehicle( x );
+
+        # update tail location if applicable
+        if self.draw_tail:
+            self.tail_patch.remove();
+            self.drawTail( x );
+
+        # Return instance of self.
+        return self;
+
+    def drawVehicle(self, x):
+        # create vehicle circle
+        self.body = patches.Circle( x[:,0], self.radius,
+            facecolor=self.color, edgecolor=self.edge_color,
+            zorder=self.zorder );
+
+        # add to plot
+        self.axs.add_patch( self.body );
+
+        # Return instance of self.
+        return self;
+
+    def drawTail(self, x):
+        # if x is a data set
+        if x.shape[1] > 1:
+            self.tail = x;
+        else:
+            self.tail[:,:-1] = self.tail[:,1:];
+            self.tail[:,-1] = x[:,0];
+
+        # create vehicle tail object
+        self.tail_patch = patches.PathPatch(path.Path(self.tail.T),
+            color=self.color, linewidth=self.linewidth, linestyle=self.linestyle,
+            fill=0, zorder=1);
+        self.axs.add_patch( self.tail_patch );
+
+        # Return instance of self.
+        return self;

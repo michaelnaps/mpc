@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from Helpers.Plant import *
 from Helpers.Optimizer import *
+from Helpers.Vehicle2D import *
 
 # hyper parameter(s)
 verbose = 0;
@@ -22,7 +23,7 @@ def VanDerPolCost(x, u=None):
 
 if __name__ == '__main__':
     # model variable
-    mvar = Model( VanDerPol, model_type='continuous' );
+    mvar = Model( VanDerPol, dt=1e-2, model_type='continuous' );
     cvar = Cost( VanDerPolCost );
     ovar = Optimizer( VanDerPolCost );
 
@@ -33,6 +34,9 @@ if __name__ == '__main__':
     # time variables
     T = 10;  Nt = round( T/mvar.dt ) + 1;
     tList = [ [i*mvar.dt for i in range( Nt )] ];
+
+    # vehicle initialization
+    vhc = Vehicle2D( mvar, x );
 
     # step for length of sim
     xList = np.empty( (Nx,Nt) );
@@ -46,6 +50,10 @@ if __name__ == '__main__':
         x = mvar.prop( x );
         c = cvar.cost( x );
         g = cvar.grad( x );
+
+        # update vehicle
+        vhc.update( x );
+        vhc.draw();
 
         # save step
         xList[:,i+1] = x[:,0];
