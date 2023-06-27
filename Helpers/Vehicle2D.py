@@ -94,3 +94,11 @@ class Vehicle2D:
 
         # Return instance of self.
         return self;
+
+    def setLimits(self, xlim=None, ylim=None):
+        if xlim is not None:
+            self.axs.set_xlim( xlim[0], xlim[1] );
+        if ylim is not None:
+            self.axs.set_ylim( ylim[0], ylim[1] );
+        # Return instance of self.
+        return self;

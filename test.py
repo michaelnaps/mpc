@@ -37,6 +37,7 @@ if __name__ == '__main__':
 
     # vehicle initialization
     vhc = Vehicle2D( mvar, x );
+    vhc.setLimits( xlim=[-7.5,7.5], ylim=[-7.5,7.5] );
 
     # step for length of sim
     xList = np.empty( (Nx,Nt) );
