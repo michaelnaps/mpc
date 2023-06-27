@@ -2,21 +2,18 @@ import numpy as np
 from Helpers.Plant import *
 
 class Optimizer( Cost ):
-    def __init__(self, g, eps=1e-6, alpha=1e-3,
-            solver='ngd',
-            gradient=None, hessian=None):
+    def __init__(self, g, eps=1e-6, solver='ngd'):
         # inherit cost function class parameters
-        Cost.__init__( self, g,
-                gradient=gradient, hessian=hessian );
+        Cost.__init__( self, g );
 
         # tolerance for zero and gradient descent step-size
         self.eps = eps;  # zero-approximation
-        self.alpha = alpha;
+        self.alpha = 1e-3;
 
         # set solution step function
         self.setSolverMethod( solver );
 
-    def setSolverMethod(self, solver):
+    def setStepMethod(self, solver):
         self.solver = solver;
         if self.solver == 'ngd':
             self.step = lambda x, g: x - self.alpha*g;
