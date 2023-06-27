@@ -9,7 +9,7 @@ from matplotlib import path
 class Vehicle2D:
     def __init__(self, F, x0,
             fig=None, axs=None, zorder=10,
-            vehicle_color='yellowgreen',
+            vhc_color='yellowgreen',
             draw_tail=1, tail_length=100,
             grid=1, pause=1e-3):
         # create figure if not given
@@ -26,7 +26,8 @@ class Vehicle2D:
         # self.fig.tight_layout();
 
         # vehicle parameters
-        self.color = vehicle_color;
+        self.color = vhc_color;
+        self.trail_color = self.color;
         self.edge_color = 'k';
         self.zorder = zorder;  # needed when multiple vhc present
         self.label = None;
