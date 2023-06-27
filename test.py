@@ -23,7 +23,7 @@ def VanDerPolCost(x, u=None):
 
 if __name__ == '__main__':
     # model variable
-    mvar = Model( VanDerPol, dt=1e-2, model_type='continuous' );
+    mvar = Model( VanDerPol, dt=0.025, model_type='continuous' );
     cvar = Cost( VanDerPolCost );
     ovar = Optimizer( VanDerPolCost );
 
@@ -32,11 +32,11 @@ if __name__ == '__main__':
     x = 2*np.random.rand( Nx, 1 )-1;  # unnecessary, but...
 
     # time variables
-    T = 10;  Nt = round( T/mvar.dt ) + 1;
+    T = 100;  Nt = round( T/mvar.dt ) + 1;
     tList = [ [i*mvar.dt for i in range( Nt )] ];
 
     # vehicle initialization
-    vhc = Vehicle2D( mvar, x );
+    vhc = Vehicle2D( mvar, x, tail_length=250 );
     vhc.setFigureDimensions( w=4, h=5 );
 
     # step for length of sim
