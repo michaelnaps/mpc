@@ -11,7 +11,7 @@ class Optimizer( Cost ):
         self.alpha = 1e-3;
 
         # set solution step function
-        self.setSolverMethod( solver );
+        self.setStepMethod( solver );
 
     def setStepMethod(self, solver):
         self.solver = solver;
