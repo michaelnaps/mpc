@@ -23,6 +23,7 @@ class Vehicle2D:
         self.axs.set_ylim( -10, 10 );
         self.axs.axis( 'equal' );
         self.axs.grid( grid );
+        # self.fig.tight_layout();
 
         # vehicle parameters
         self.color = vehicle_color;
@@ -100,5 +101,13 @@ class Vehicle2D:
             self.axs.set_xlim( xlim[0], xlim[1] );
         if ylim is not None:
             self.axs.set_ylim( ylim[0], ylim[1] );
+        # Return instance of self.
+        return self;
+
+    def setFigureDimensions(self, w=None, h=None):
+        if w is not None:
+            self.fig.set_figwidth( w );
+        if h is not None:
+            self.fig.set_figheight( h );
         # Return instance of self.
         return self;

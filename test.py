@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     # initial conditions
     Nx = 2;
-    x = 2*np.random.rand(Nx,1)-1;  # unnecessary, but...
+    x = 2*np.random.rand( Nx, 1 )-1;  # unnecessary, but...
 
     # time variables
     T = 10;  Nt = round( T/mvar.dt ) + 1;
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     # vehicle initialization
     vhc = Vehicle2D( mvar, x );
-    vhc.setLimits( xlim=[-7.5,7.5], ylim=[-7.5,7.5] );
+    vhc.setFigureDimensions( w=4, h=5 );
 
     # step for length of sim
     xList = np.empty( (Nx,Nt) );
@@ -74,16 +74,16 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(1,Np);
 
     axs[0].plot( xList[0], xList[1] );
-    axs[0].set_title('Model');
+    axs[0].set_title( 'Model' );
 
     axs[1].plot( tList[0], cList[0] );
-    axs[1].set_title('Cost');
+    axs[1].set_title( 'Cost' );
 
     axs[2].plot( gList[0], gList[1] );
-    axs[2].set_title('Gradient');
+    axs[2].set_title( 'Gradient' );
 
     for i in range( Np ):
-        axs[i].grid(1);
-        axs[i].axis('equal');
+        axs[i].grid( 1 );
+        axs[i].axis( 'equal' );
 
     plt.show();
