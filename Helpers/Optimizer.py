@@ -57,6 +57,27 @@ class ModelPredictiveControl( Model, Optimizer ):
         # save model to inherited class
         Model.__init__( self, F,
                 dt=dt, model_type=model_type );
+        Cost.__init__(self, g);
 
-        # save the MPC cost function
-        self.mpcost = g;
+    def statePrediction(self, x0, uList):
+        if self.Nx is None:
+            self.Nx = x0.shape[0];
+        if self.Nu is None:
+            self.Nu = uList.shape[0];
+
+        xList = np.empty( (self.Nx, self.N) );
+        xList[:,0] = x0[:,0];
+        for u in uList.T:
+            xList[:,i+1] = self.step( x, u[:,0] );
+
+        return xList;
+
+    def predictionCost(self, xList, uList):
+        C = 0;
+
+        for x, u in zip( xList, uList ):
+            C += self.cost( x[:,0], u[:,0] );
+
+        return C;
+
+    def solve(self, x0, uinit):

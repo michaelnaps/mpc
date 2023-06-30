@@ -6,19 +6,24 @@ from Helpers.Optimizer import *
 from Helpers.Vehicle2D import *
 
 # hyper parameter(s)
+P = 10;
+Nx = 2;
+Nu = 1;
 verbose = 0;
 
 # model an autonomous system
 def VanDerPol(x, u=None):
+    if u is None:
+        u = 0;
     mu = 2.0;
     dx = np.array( [
         x[1],
-        mu*(1 - x[0]**2)*x[1] - x[0]
+        mu*(1 - x[0]**2)*x[1] - x[0] + u
     ] );
     return dx;
 
-def VanDerPolCost(x):
-    C = x[0]**2 + x[1]**2;
+def VanDerPolCost(x, u=None):
+    C += x[0]**2 + x[1]**2;
     return C;
 
 if __name__ == '__main__':
@@ -26,6 +31,7 @@ if __name__ == '__main__':
     mvar = Model( VanDerPol, dt=0.025, model_type='continuous' );
     cvar = Cost( VanDerPolCost );
     ovar = Optimizer( VanDerPolCost );
+    mpcvar = ModelPredictiveControl( VanDerPol, VanDerPolCost );
 
     # initial conditions
     Nx = 2;
@@ -68,6 +74,9 @@ if __name__ == '__main__':
             print( g );
             print( ovar.grad( x ) );
             print( ovar.solve( x ) );
+
+            xPredict = mpcvar.statePrediction( x, [None for i in range( P )] );
+
             print( '------------' );
 
     # plot results
