@@ -2,8 +2,12 @@
 # Classes: Model(), Cost()
 
 import numpy as np
+import time
 
 def fdm2c(g, x, h=1e-6):
+    print( x );
+    print( x.shape );
+
     # initialize parameters
     Nx = len( x );        # dimension of input
     Ng = len( g(x) );     # dimension of output
@@ -18,6 +22,9 @@ def fdm2c(g, x, h=1e-6):
         gp1 = g( xp1 );
 
         grad[i,:] = (gp1 - gn1).reshape(Ng,)/(2*h);
+
+    print( grad );
+    time.sleep( 1 );
 
     return grad;
 

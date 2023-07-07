@@ -52,7 +52,7 @@ class Optimizer( Cost ):
 # Assumptions:
 #   1). Cost is a function of the state AND input:
 #       c = g(x,u)
-class ModelPredictiveControl( Model, Optimizer ):
+class ModelPredictiveControl( Model, Cost ):
     def __init__(self, F, g, P=10, dt=1e-3, model_type='discrete'):
         # Save model to inherited class.
         Model.__init__( self, F,
@@ -74,10 +74,7 @@ class ModelPredictiveControl( Model, Optimizer ):
         xList[:,0] = x0[:,0];
         for i in range( self.P ):
             x = xList[:,i,None];
-            print( 'this is x: ', x )
             u = uList[:,i,None];
-            print( 'this is u: ', u )
-            print( self.prop(x, u) )
             xList[:,i+1] = self.prop( x, u )[:,0];
 
         return xList;
@@ -93,5 +90,13 @@ class ModelPredictiveControl( Model, Optimizer ):
 
         return C
 
-    def solve(self, x0, uinit):
-        pass;
+    def costGenerator(self, x0):
+        # Generate cost function around x0.
+        return lambda uList: self.costPrediction( x0, uList );
+
+    def solve(self, x0, uinit, verbose=0):
+        # Initialize optimization variable with cost generator.
+        ovar = Optimizer( self.costGenerator( x0 ) );
+        # Return optimization results.
+        u = ovar.solve( uinit, verbose=verbose );
+        return u;
