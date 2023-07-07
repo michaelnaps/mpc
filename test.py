@@ -9,7 +9,7 @@ from Helpers.Vehicle2D import *
 P = 10;
 Nx = 2;
 Nu = 1;
-verbose = 1;
+verbose = 0;
 
 # model an autonomous system
 def VanDerPol(x, u=[None]):
@@ -39,7 +39,6 @@ if __name__ == '__main__':
 
     # time variables
     T = 100;  Nt = round( T/mvar.dt ) + 1;
-    print(Nt)
     tList = [ [i*mvar.dt for i in range( Nt )] ];
 
     # vehicle initialization
@@ -84,17 +83,20 @@ if __name__ == '__main__':
             print( '------------' );
 
     # plot results
-    Np = 3;
+    Np = 4;
     fig, axs = plt.subplots(1,Np);
 
     axs[0].plot( xList[0], xList[1] );
     axs[0].set_title( 'Model' );
 
-    axs[1].plot( tList[0], cList[0] );
-    axs[1].set_title( 'Cost' );
+    axs[1].plot( tList[0], xList[0] );
+    axs[1].set_title( '$x$ vs. $t$' );
 
-    axs[2].plot( gList[0], gList[1] );
-    axs[2].set_title( 'Gradient' );
+    axs[2].plot( tList[0], cList[0] );
+    axs[2].set_title( 'Cost' );
+
+    axs[3].plot( gList[0], gList[1] );
+    axs[3].set_title( 'Gradient' );
 
     for i in range( Np ):
         axs[i].grid( 1 );
