@@ -9,7 +9,7 @@ from Helpers.Vehicle2D import *
 P = 10;
 Nx = 2;
 Nu = 1;
-verbose = 0;
+verbose = 1;
 
 # model an autonomous system
 def VanDerPol(x, u=[None]):
@@ -23,7 +23,9 @@ def VanDerPol(x, u=[None]):
     return dx;
 
 def VanDerPolCost(x, u=None):
+    # print( x );
     C = x[0]**2 + x[1]**2;
+    # print( C );
     return C;
 
 if __name__ == '__main__':
@@ -31,7 +33,7 @@ if __name__ == '__main__':
     mvar = Model( VanDerPol, dt=0.025, model_type='continuous' );
     cvar = Cost( VanDerPolCost );
     ovar = Optimizer( VanDerPolCost );
-    mpcvar = ModelPredictiveControl( VanDerPol, VanDerPolCost );
+    mpcvar = ModelPredictiveControl( VanDerPol, VanDerPolCost, model_type='continuous' );
 
     # initial conditions
     Nx = 2;
@@ -64,21 +66,22 @@ if __name__ == '__main__':
             vhc.draw();
 
         # save step
+        print( x );
         xList[:,i+1] = x[:,0];
         cList[:,i+1] = c;
         gList[:,i+1] = g[:,0];
 
         if verbose:
-            print( 'x:', x );
+            print( 'x:', x.T );
             print( 'c:', c );
-            print( 'g:', g );
-            print( 'grad:', ovar.grad( x ) );
-            print( 'solve:', ovar.solve( x ) );
+            print( 'g:', g.T );
+            print( 'grad:', ovar.grad( x ).T );
+            print( 'solve:', ovar.solve( x ).T );
 
-            uList = np.zeros( (Nu,P) );
-            xList = mpcvar.statePrediction( x, uList );
-            print( 'predict:\n',  xList );
-            print( 'predict cost:', mpcvar.predictionCost( xList, uList ) );
+            uPred = np.zeros( (Nu,P) );
+            xPred = mpcvar.statePrediction( x, uPred );
+            print( 'predict:\n',  xPred );
+            print( 'predict cost:', mpcvar.costPrediction( x, uPred ) );
 
             print( '------------' );
 

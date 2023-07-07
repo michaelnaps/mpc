@@ -74,20 +74,24 @@ class ModelPredictiveControl( Model, Optimizer ):
         xList[:,0] = x0[:,0];
         for i in range( self.P ):
             x = xList[:,i,None];
+            print( 'this is x: ', x )
             u = uList[:,i,None];
+            print( 'this is u: ', u )
+            print( self.prop(x, u) )
             xList[:,i+1] = self.prop( x, u )[:,0];
 
         return xList;
 
-    def predictionCost(self, xList, uList):
-        C = [0];
+    def costPrediction(self, x0, uList):
+        xList = self.statePrediction( x0, uList );
 
+        C = [0];
         for i in range( self.P ):
             x = xList[:,i+1,None];
             u = uList[:,i,None];
             C += self.cost( x, u );
 
-        return C[0];
+        return C
 
     def solve(self, x0, uinit):
         pass;
