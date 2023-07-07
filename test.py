@@ -66,22 +66,21 @@ if __name__ == '__main__':
             vhc.draw();
 
         # save step
-        print( x );
         xList[:,i+1] = x[:,0];
         cList[:,i+1] = c;
         gList[:,i+1] = g[:,0];
 
         if verbose:
-            print( 'x:', x.T );
-            print( 'c:', c );
-            print( 'g:', g.T );
+            # print( 'x:', x.T );
+            # print( 'c:', c );
+            # print( 'g:', g.T );
             # print( 'grad:', ovar.grad( x ).T );
             # print( 'solve:', ovar.solve( x ).T );
 
             uPred = np.zeros( (Nu,P) );
-            xPred = mpcvar.statePrediction( x, uPred );
-            print( 'predict:\n',  xPred );
-            print( 'predict cost:', mpcvar.costPrediction( x, uPred ) );
+            # xPred = mpcvar.statePrediction( x, uPred );
+            # print( 'predict:\n',  xPred );
+            # print( 'predict cost:', mpcvar.costPrediction( x, uPred ) );
             print( 'MPC solution: ', mpcvar.solve( x, uPred, verbose=1 ) );
 
             print( '------------' );
