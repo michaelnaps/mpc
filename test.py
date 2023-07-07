@@ -9,21 +9,21 @@ from Helpers.Vehicle2D import *
 P = 10;
 Nx = 2;
 Nu = 1;
-verbose = 0;
+verbose = 1;
 
 # model an autonomous system
-def VanDerPol(x, u=None):
-    if u is None:
-        u = 0;
+def VanDerPol(x, u=[None]):
+    if None in u:
+        u = [0];
     mu = 2.0;
     dx = np.array( [
         x[1],
-        mu*(1 - x[0]**2)*x[1] - x[0] + u
+        mu*(1 - x[0]**2)*x[1] - x[0] + u[0]
     ] );
     return dx;
 
 def VanDerPolCost(x, u=None):
-    C += x[0]**2 + x[1]**2;
+    C = x[0]**2 + x[1]**2;
     return C;
 
 if __name__ == '__main__':
@@ -39,6 +39,7 @@ if __name__ == '__main__':
 
     # time variables
     T = 100;  Nt = round( T/mvar.dt ) + 1;
+    print(Nt)
     tList = [ [i*mvar.dt for i in range( Nt )] ];
 
     # vehicle initialization
@@ -69,13 +70,16 @@ if __name__ == '__main__':
         gList[:,i+1] = g[:,0];
 
         if verbose:
-            print( x );
-            print( c );
-            print( g );
-            print( ovar.grad( x ) );
-            print( ovar.solve( x ) );
+            print( 'x:', x );
+            print( 'c:', c );
+            print( 'g:', g );
+            print( 'grad:', ovar.grad( x ) );
+            print( 'solve:', ovar.solve( x ) );
 
-            xPredict = mpcvar.statePrediction( x, [None for i in range( P )] );
+            uList = np.zeros( (Nu,P) );
+            xList = mpcvar.statePrediction( x, uList );
+            print( 'predict:\n',  xList );
+            print( 'predict cost:', mpcvar.predictionCost( xList, uList ) );
 
             print( '------------' );
 

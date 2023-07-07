@@ -53,31 +53,41 @@ class Optimizer( Cost ):
 #   1). Cost is a function of the state AND input:
 #       c = g(x,u)
 class ModelPredictiveControl( Model, Optimizer ):
-    def __init__(self, F, g, N=10, dt=1e-3, model_type='discrete'):
-        # save model to inherited class
+    def __init__(self, F, g, P=10, dt=1e-3, model_type='discrete'):
+        # Save model to inherited class.
         Model.__init__( self, F,
                 dt=dt, model_type=model_type );
         Cost.__init__(self, g);
 
+        # Dimensions parameters.
+        self.P = P;
+        self.Nx = None;
+        self.Nu = None;
+
     def statePrediction(self, x0, uList):
         if self.Nx is None:
-            self.Nx = x0.shape[0];
+            self.Nx = len( x0 );
         if self.Nu is None:
-            self.Nu = uList.shape[0];
+            self.Nu = len( uList );
 
-        xList = np.empty( (self.Nx, self.N) );
+        xList = np.empty( (self.Nx, self.P+1) );
         xList[:,0] = x0[:,0];
-        for u in uList.T:
-            xList[:,i+1] = self.step( x, u[:,0] );
+        for i in range( self.P ):
+            x = xList[:,i,None];
+            u = uList[:,i,None];
+            xList[:,i+1] = self.prop( x, u )[:,0];
 
         return xList;
 
     def predictionCost(self, xList, uList):
-        C = 0;
+        C = [0];
 
-        for x, u in zip( xList, uList ):
-            C += self.cost( x[:,0], u[:,0] );
+        for i in range( self.P ):
+            x = xList[:,i+1,None];
+            u = uList[:,i,None];
+            C += self.cost( x, u );
 
-        return C;
+        return C[0];
 
     def solve(self, x0, uinit):
+        pass;

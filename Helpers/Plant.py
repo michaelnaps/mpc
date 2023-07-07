@@ -21,7 +21,7 @@ def fdm2c(g, x, h=1e-6):
 
     return grad;
 
-def TaylorMethod(F, x0, u=None, dt=1e-3):
+def TaylorMethod(F, x0, u=[None], dt=1e-3):
     return x0 + dt*F( x0, u );
 
 class Cost:
@@ -47,12 +47,12 @@ class Model:
             model_type='discrete'):
         # default to TaylorMethod when given model is continuous
         if model_type == 'continuous':
-            self.model = lambda x0,u=None: TaylorMethod( F, x0, u, dt );
+            self.model = lambda x0,u=[None]: TaylorMethod( F, x0, u, dt );
         else:
             self.model = F;
 
         # set time-step for reference
         self.dt = dt;
 
-    def prop(self, x0, u=None):
+    def prop(self, x0, u=[None]):
         return self.model( x0, u );
