@@ -78,7 +78,7 @@ $$
     X^\*, U^\* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_k, u_k) + g_P(x_P) \right)
 $$
 
-Where $U^*$ represents the set of optimal policies as defined by the cost function solved for over the prediction horizon, and $X^*$ is the optimal state predictions as accumulated through $U^*$.
+Where $U^\*$ represents the set of optimal policies as defined by the cost function solved for over the prediction horizon, and $X^\*$ is the optimal state predictions as accumulated through $U^\*$.
 
 
 ___
