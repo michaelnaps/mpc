@@ -1,5 +1,5 @@
 # File: System.py
-# Classes: Model(), Cost()
+# Classes: Model()
 
 import numpy as np
 
@@ -11,7 +11,7 @@ class Model:
             model_type='discrete'):
         # default to TaylorMethod when given model is continuous
         if model_type == 'continuous':
-            self.model = lambda x0,u=[None]: TaylorMethod( F, x0, u, dt );
+            self.model = lambda x,u=[None]: TaylorMethod( F, x, u, dt );
         else:
             self.model = F;
 

@@ -161,5 +161,5 @@ class ModelPredictiveControl( Model, Cost ):
         ovar.setMaxIter( self.max_iter );
 
         # Return optimization results.
-        uvect = uinit.reshape( self.P*self.Nu, 1 );
+        uvect = uinit.reshape( self.Nu*self.P, 1 );
         return ovar.solve( uvect, verbose=verbose );
