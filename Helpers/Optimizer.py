@@ -38,6 +38,11 @@ class Cost:
         else:
             self.hess = hessian;
 
+# Class: Optimizer()
+# Assumptions:
+#   1). Objective terms can be/are vectorized.
+#   2). Cost function is scalar with a single state input term.
+#       c = g(x)
 class Optimizer( Cost ):
     def __init__(self, g, eps=1e-6, solver='ngd'):
         # inherit cost function class parameters
@@ -103,17 +108,20 @@ class Optimizer( Cost ):
 #   1). Instantaneous cost is a function of the state AND input:
 #       c = g(x,u)
 #   2). Period cost = Terminal cost, and
-#   3). Initial state does not change during opt.:
+#   3). Initial state does not change during, or have impact on opt.:
 #       G(X,U) = G(X[1:],U)
 class ModelPredictiveControl( Model, Optimizer ):
-    def __init__(self, F, g, P=10, k=1, Nu=1, Nx=1,
-            dt=1e-3, model_type='discrete'):
+    def __init__(self, F, g,
+            P=10, k=1, Nx=1, Nu=1, dt=1e-3,
+            model_type='discrete',
+            cost_type='instant'):
         # Save model to inherited class.
         Model.__init__( self, F,
                 dt=dt, model_type=model_type );
 
         # Initialize optimizer with g=None.
-        self.instcost = g;  # instantaneous cost
+        self.cost_type = cost_type;
+        self.givencost = g;
         Optimizer.__init__(self, None);  # fragile
 
         # Dimensions parameters.
@@ -124,23 +132,42 @@ class ModelPredictiveControl( Model, Optimizer ):
         self.alpha = 0.1;
 
     def statePrediction(self, x0, uList):
+        # Intialize empty state set.
         xList = np.empty( (self.Nx, self.P+1) );
         xList[:,0] = x0[:,0];
+
+        # Propagate model using input set for length of horizon.
         for i in range( self.P ):
             u = uList[:,i,None];
             x = xList[:,i,None];
+
+            # For a given number of 'knots' hold the input constant.
             for j in range( self.k ):
                 x = self.prop( x, u );
+
+            # Add to set.
             xList[:,i+1] = x[:,0];
+
+        # Return state prediction set.
         return xList;
 
     def costPrediction(self, x0, uList):
+        # Generate the prediction states.
         xList = self.statePrediction( x0, uList );
-        C = [0];
-        for i in range( self.P ):
-            u = uList[:,i,None];
-            x = xList[:,i+1,None];
-            C += self.instcost( x, u );
+
+        # If the cost is instantaneous...
+        if self.cost_type == 'instant':
+            C = [0];
+            for i in range( self.P ):
+                u = uList[:,i,None];
+                x = xList[:,i+1,None];
+                C += self.givencost( x, u );
+
+        # If the cost is horizon...
+        elif self.cost_type == 'horizon':
+            C = self.givencost( xList, uList );
+
+        # Return the calculated cost.
         return C
 
     def costFunctionGenerator(self, x0):
