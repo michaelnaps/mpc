@@ -7,7 +7,7 @@ from matplotlib import path
 # Class: Vehicle2D
 # Assumptions: Model is discrete.
 class Vehicle2D:
-    def __init__(self, F, x0,
+    def __init__(self, F, x0, radius=0.5,
             fig=None, axs=None, zorder=10,
             vhc_color='yellowgreen',
             draw_tail=1, tail_length=100,
@@ -26,12 +26,12 @@ class Vehicle2D:
         # self.fig.tight_layout();
 
         # vehicle parameters
+        self.radius = radius;
         self.color = vhc_color;
         self.trail_color = self.color;
         self.edge_color = 'k';
         self.zorder = zorder;  # needed when multiple vhc present
         self.label = None;
-        self.radius = 0.5;
 
         # tail parameters
         self.draw_tail = draw_tail;

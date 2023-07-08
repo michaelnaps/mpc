@@ -85,14 +85,13 @@ class Optimizer( Cost ):
             x = self.step( x, dg );
             dg = self.grad( x );
             gnorm = np.linalg.norm( dg );
-
             if verbose:
                 # print("Gradient:  ", g);
                 print( "\n|g|:    \t", gnorm );
                 print( "New Cost: \t", self.cost( x )[0] );
-                print( "New Input:\n", x.reshape( None ) );
+                print( "New Input:\n", x.reshape( shape ) );
 
-            if n > self.max_iter-1:
+            if n > self.max_iter:
                 break;
             n += 1;
 
@@ -107,7 +106,7 @@ class Optimizer( Cost ):
 #   3). Initial state does not change during opt.:
 #       G(X,U) = G(X[1:],U)
 class ModelPredictiveControl( Model, Optimizer ):
-    def __init__(self, F, g, P=10, Nu=1, Nx=1,
+    def __init__(self, F, g, P=10, k=1, Nu=1, Nx=1,
             dt=1e-3, model_type='discrete'):
         # Save model to inherited class.
         Model.__init__( self, F,
@@ -119,6 +118,7 @@ class ModelPredictiveControl( Model, Optimizer ):
 
         # Dimensions parameters.
         self.P = P;
+        self.k = k;
         self.Nu = Nu;
         self.Nx = Nx;
         self.alpha = 0.1;
@@ -127,17 +127,19 @@ class ModelPredictiveControl( Model, Optimizer ):
         xList = np.empty( (self.Nx, self.P+1) );
         xList[:,0] = x0[:,0];
         for i in range( self.P ):
-            x = xList[:,i,None];
             u = uList[:,i,None];
-            xList[:,i+1] = self.prop( x, u )[:,0];
+            x = xList[:,i,None];
+            for j in range( self.k ):
+                x = self.prop( x, u );
+            xList[:,i+1] = x[:,0];
         return xList;
 
     def costPrediction(self, x0, uList):
         xList = self.statePrediction( x0, uList );
         C = [0];
         for i in range( self.P ):
-            x = xList[:,i+1,None];
             u = uList[:,i,None];
+            x = xList[:,i+1,None];
             C += self.instcost( x, u );
         return C
 
