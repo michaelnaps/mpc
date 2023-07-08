@@ -75,7 +75,7 @@ class Optimizer( Cost ):
         # Return instance of self.
         return self;
 
-    def solve(self, xinit, verbose=0):
+    def solve(self, xinit, verbose=0, shape=None):
         x = xinit.copy();  # copy the initial guess
         dg = self.grad( x );
         gnorm = np.linalg.norm( dg );
@@ -88,9 +88,9 @@ class Optimizer( Cost ):
 
             if verbose:
                 # print("Gradient:  ", g);
-                print("\n|g|:    \t", gnorm);
-                print("New Cost: \t", self.cost( x )[0]);
-                print("New Input:\n", x);
+                print( "\n|g|:    \t", gnorm );
+                print( "New Cost: \t", self.cost( x )[0] );
+                print( "New Input:\n", x.reshape( None ) );
 
             if n > self.max_iter-1:
                 break;
@@ -156,4 +156,6 @@ class ModelPredictiveControl( Model, Optimizer ):
 
         # Find optimization results and return.
         uvect = uinit.reshape( self.Nu*self.P, 1 );
-        return Optimizer.solve( self, uvect, verbose=verbose );
+        ufinal = Optimizer.solve( self, uvect,
+            verbose=verbose, shape=(self.Nu,self.P) );
+        return ufinal;
