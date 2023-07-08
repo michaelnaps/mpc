@@ -46,19 +46,22 @@ def model(x, u):
     return xn;
 
 def cost(x, u):
-
+    # Position cost.
     kx = 150;
     C = kx*(x[0] - xd[0])**2 + kx*(x[1] - xd[1])**2;
 
+    # Velocity cost.
     kdx = 4;
     C = C + kdx*(x[2]**2 + x[3]**2);
 
+    # Control cost.
     ku = 0.1;
     C += ku*(u[0]**2 + u[1]**2);
 
+    # Barrier costs.
     ko = 50;
     for sphere in sphereworld:
-        C += ko/sphere.distance(x[:2,None])**2;
+        C += ko/sphere.distance(x[:2])**2;
 
     return C;
 
@@ -85,6 +88,7 @@ if __name__ == "__main__":
 
     T = 15;  Nt = round( T/dt ) + 1;
     tList = np.array( [[i*dt for i in range( Nt )]] );
+    print( 'Run simulation for %i steps.' % Nt );
 
     uList = np.zeros( (Nu*P, Nt) );
     xList = np.empty( (Nx, Nt) );
@@ -95,7 +99,7 @@ if __name__ == "__main__":
         uList[:,i+1] = u.reshape( Nu*P, );
         xList[:,i+1] = m_var.prop( x, u[:,0] )[:,0];
         if i % 10 == 0:
-            print( 'time =', tList[0][i] );
+            print( 'step =', i );
         #     print( 'x:', xList[:,i+1] );
         #     print( uList[:,i+1] );
         vhc.update( xList[:2,i+1,None] );
