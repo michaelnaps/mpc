@@ -1,7 +1,7 @@
 import numpy as np
 from Helpers.Plant import *
 
-from time import sleep
+# from time import sleep
 
 def fdm2c(g, x, h=1e-6):
     # initialize parameters
@@ -46,14 +46,23 @@ class Optimizer( Cost ):
 
         # tolerance for zero and gradient descent step-size
         self.eps = eps;  # zero-approximation
-        self.alpha = 1e-3;
+        self.alpha = 0.1;
 
         # set solution step function
         self.setStepMethod( solver );
 
-    def setObjectiveFunction(self, g):
-        self.g = g;
+    def setStepSize(self, a):
+        self.alpha = a;
+        # Return instance of self.
+        return self;
 
+    def setMaxIter(self, n):
+        self.max_iter = n;
+        # Return instance of self.
+        return self;
+
+    def setObjectiveFunction(self, g):
+        self.cost = g;
         # Return instance of self.
         return self;
 
@@ -72,6 +81,7 @@ class Optimizer( Cost ):
         dg = self.grad( x );
         gnorm = np.linalg.norm( dg );
 
+        n = 1;
         while gnorm > self.eps:
             x = self.step( x, dg );
             dg = self.grad( x );
@@ -82,7 +92,10 @@ class Optimizer( Cost ):
                 print("\n|g|:       ", gnorm);
                 print("New Cost:    ", self.cost( x )[0]);
                 print("New Input:\n "  , x);
-                sleep(0.5);
+
+            if n > self.max_iter-1:
+                break;
+            n += 1;
 
         # Return solution.
         return x;
@@ -103,6 +116,17 @@ class ModelPredictiveControl( Model, Cost ):
         self.P = P;
         self.Nu = Nu;
         self.Nx = Nx;
+        self.alpha = 0.1;
+
+    def setStepSize(self, a):
+        self.alpha = a;
+        # Return instance of self.
+        return self;
+
+    def setMaxIter(self, n):
+        self.max_iter = 10;
+        # Return instance of self.
+        return self;
 
     def statePrediction(self, x0, uList):
         xList = np.empty( (self.Nx, self.P+1) );
@@ -133,6 +157,8 @@ class ModelPredictiveControl( Model, Cost ):
 
         # Initialize optimization variable with cost generator.
         ovar = Optimizer( self.costFunctionGenerator( x0 ) );
+        ovar.setStepSize( self.alpha );
+        ovar.setMaxIter( self.max_iter );
 
         # Return optimization results.
         uvect = uinit.reshape( self.P*self.Nu, 1 );

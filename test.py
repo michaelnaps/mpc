@@ -22,10 +22,8 @@ def VanDerPol(x, u=[None]):
     ] );
     return dx;
 
-def VanDerPolCost(x, u=None):
-    # print( x );
+def VanDerPolCost(x, u=[None]):
     C = x[0]**2 + x[1]**2;
-    # print( C );
     return C;
 
 if __name__ == '__main__':
@@ -33,7 +31,8 @@ if __name__ == '__main__':
     mvar = Model( VanDerPol, dt=0.025, model_type='continuous' );
     cvar = Cost( VanDerPolCost );
     ovar = Optimizer( VanDerPolCost );
-    mpcvar = ModelPredictiveControl( VanDerPol, VanDerPolCost, model_type='continuous' );
+    mpcvar = ModelPredictiveControl( VanDerPol, VanDerPolCost,
+        model_type='continuous' );
 
     # initial conditions
     Nx = 2;
