@@ -1,6 +1,5 @@
 import numpy as np
 from Helpers.Plant import *
-
 # from time import sleep
 
 def fdm2c(g, x, h=1e-6):
@@ -29,7 +28,7 @@ class Cost:
 
         # set gradient function
         if gradient is None:
-            self.grad = lambda x: fdm2c( g, x );
+            self.grad = lambda x: fdm2c( self.cost, x );
         else:
             self.grad = gradient;
 
@@ -89,9 +88,9 @@ class Optimizer( Cost ):
 
             if verbose:
                 # print("Gradient:  ", g);
-                print("\n|g|:       ", gnorm);
-                print("New Cost:    ", self.cost( x )[0]);
-                print("New Input:\n "  , x);
+                print("\n|g|:    \t", gnorm);
+                print("New Cost: \t", self.cost( x )[0]);
+                print("New Input:\n", x);
 
             if n > self.max_iter-1:
                 break;
@@ -102,31 +101,27 @@ class Optimizer( Cost ):
 
 # Class: ModelPredictiveControl()
 # Assumptions:
-#   1). Cost is a function of the state AND input:
+#   1). Instantaneous cost is a function of the state AND input:
 #       c = g(x,u)
-class ModelPredictiveControl( Model, Cost ):
-    def __init__(self, F, g, P=10, Nu=1, Nx=None,
+#   2). Period cost = Terminal cost, and
+#   3). Initial state does not change during opt.:
+#       G(X,U) = G(X[1:],U)
+class ModelPredictiveControl( Model, Optimizer ):
+    def __init__(self, F, g, P=10, Nu=1, Nx=1,
             dt=1e-3, model_type='discrete'):
         # Save model to inherited class.
         Model.__init__( self, F,
                 dt=dt, model_type=model_type );
-        Cost.__init__(self, g);
+
+        # Initialize optimizer with g=None.
+        self.instcost = g;  # instantaneous cost
+        Optimizer.__init__(self, None);  # fragile
 
         # Dimensions parameters.
         self.P = P;
         self.Nu = Nu;
         self.Nx = Nx;
         self.alpha = 0.1;
-
-    def setStepSize(self, a):
-        self.alpha = a;
-        # Return instance of self.
-        return self;
-
-    def setMaxIter(self, n):
-        self.max_iter = 10;
-        # Return instance of self.
-        return self;
 
     def statePrediction(self, x0, uList):
         xList = np.empty( (self.Nx, self.P+1) );
@@ -143,12 +138,13 @@ class ModelPredictiveControl( Model, Cost ):
         for i in range( self.P ):
             x = xList[:,i+1,None];
             u = uList[:,i,None];
-            C += self.cost( x, u );
+            C += self.instcost( x, u );
         return C
 
     def costFunctionGenerator(self, x0):
         # Generate cost function around x0.
-        return lambda uList: self.costPrediction( x0, uList.reshape( self.Nu,self.P ) );
+        return lambda uList: \
+            self.costPrediction( x0, uList.reshape( self.Nu,self.P ) );
 
     def solve(self, x0, uinit, verbose=0):
         # If necessary set Nx to number of states.
@@ -156,10 +152,8 @@ class ModelPredictiveControl( Model, Cost ):
             self.Nx = len( x0 );
 
         # Initialize optimization variable with cost generator.
-        ovar = Optimizer( self.costFunctionGenerator( x0 ) );
-        ovar.setStepSize( self.alpha );
-        ovar.setMaxIter( self.max_iter );
+        self.setObjectiveFunction( self.costFunctionGenerator( x0 ) );
 
-        # Return optimization results.
+        # Find optimization results and return.
         uvect = uinit.reshape( self.Nu*self.P, 1 );
-        return ovar.solve( uvect, verbose=verbose );
+        return Optimizer.solve( self, uvect, verbose=verbose );

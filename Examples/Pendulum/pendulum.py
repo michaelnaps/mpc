@@ -21,33 +21,35 @@ def model(x, u):
     return dx;
 
 def cost(x, u):
+    kx = 500;
+    kd = 0.1;
     xd = np.array( [[np.pi/2],[0]] );
-    kx = 1000;  kd = 0;
     C = kx*(x[0] - xd[0])**2 + kd*(x[1] - xd[1])**2;
     return C;
 
 def pendulum(tList, xList, uList):
-    fig, axs = plt.subplots(2,1);
+    fig, axs = plt.subplots( 2,1 );
 
-    axs[0].plot(tList.T, xList.T);
-    axs[1].plot(tList.T, uList.T);
+    axs[0].plot( tList.T, xList.T );
+    axs[1].plot( tList.T, np.fliplr( uList.T ) );
 
     axs[0].legend( ('$x_1$', '$x_2$') );
     axs[1].legend( ('$u_1$',) );
 
+    return fig, axs;
+
 if __name__ == "__main__":
     dt = 0.025;
 
-    mvar = plant.Model( model, model_type='continuous' );
+    mvar = plant.Model( model, dt=dt, model_type='continuous' );
     mpcvar = opt.ModelPredictiveControl(model, cost,
         P=10, Nu=1, Nx=2, dt=dt, model_type='continuous');
     mpcvar.setStepSize( 0.1 );
-    mpcvar.setMaxIter( 50 );
+    mpcvar.setMaxIter( 10 );
 
     x0 = np.array( [[0],[-0.1]] );
-    uinit = np.zeros( (mpcvar.Nu, mpcvar.P) );
 
-    T = 25;  Nt = round( T/mpcvar.dt ) + 1;
+    T = 5;  Nt = round( T/mpcvar.dt ) + 1;
     tList = np.array( [ [i*mpcvar.dt for i in range( Nt )] ] );
 
     uList = np.zeros( (mpcvar.Nu*mpcvar.P, Nt) );
@@ -61,6 +63,5 @@ if __name__ == "__main__":
             print( 'time =', tList[0][i] );
             print( uList[:,i+1] );
 
-
-    pendulum( tList, xList, uList[0,None] );
+    pendulum( tList, xList, uList );
     plt.show();
