@@ -10,14 +10,14 @@ import Helpers.Plant as plant
 import Helpers.Optimizer as opt
 
 
-# hyper parameter
+# Hyper parameter(s).
 xd = np.array( [[5],[7],[0],[0]] );
 dt = 0.025;
-P = 5;
-k = 2;
+P = 10;
+k = 1;
 Nx = 4;
 Nu = 2;
-max_iter = 25;
+max_iter = 10;
 model_type = 'discrete';
 
 def init_sphereworld():
@@ -30,6 +30,8 @@ def init_sphereworld():
 
 sphereworld = init_sphereworld();
 
+
+# Model and cost function initialization.
 def model(x, u):
     c = 0.1;
 
@@ -44,22 +46,24 @@ def model(x, u):
     return xn;
 
 def cost(x, u):
-    kx = 100;
-    C = 0*(x[0] - xd[0])**2 + kx*(x[1] - xd[1])**2;
 
-    kdx = 2;
+    kx = 150;
+    C = kx*(x[0] - xd[0])**2 + kx*(x[1] - xd[1])**2;
+
+    kdx = 4;
     C = C + kdx*(x[2]**2 + x[3]**2);
 
-    ku = 1;
+    ku = 0.1;
     C += ku*(u[0]**2 + u[1]**2);
 
-    ka = 0;
-    kb = 0;
+    ko = 50;
     for sphere in sphereworld:
-        C += ka/sphere.distance(x[:2,None])**2;
+        C += ko/sphere.distance(x[:2,None])**2;
 
     return C;
 
+
+# Main execution block.
 if __name__ == "__main__":
     x0 = np.array( [[-1.68],[-9.6],[0],[0]] );
     uinit = np.zeros( (Nu, P) );
@@ -69,16 +73,17 @@ if __name__ == "__main__":
     mpc_var.setStepSize( 0.1 );
     mpc_var.setMaxIter( max_iter );
 
-    mvar = plant.Model( model, dt=dt );
+    m_var = plant.Model( model, dt=dt );
 
     fig, axs = plt.subplots();
+    axs.plot( xd[0], xd[1], marker='*', color='g' );
     for sphere in init_sphereworld():
         sphere.plot( fig=fig, axs=axs );
     vhc = Vehicle2D( model, x0[:2], radius=0.2,
         fig=fig, axs=axs, tail_length=10 );
     plt.show( block=0 );
 
-    T = 25;  Nt = round( T/dt ) + 1;
+    T = 15;  Nt = round( T/dt ) + 1;
     tList = np.array( [[i*dt for i in range( Nt )]] );
 
     uList = np.zeros( (Nu*P, Nt) );
@@ -86,13 +91,15 @@ if __name__ == "__main__":
     xList[:,0] = x0[:,0];
     for i in range( Nt-1 ):
         x = xList[:,i,None];
-        uList[:,i+1] = mpc_var.solve( x, uList[:,i], verbose=0 )[:,0];
-        xList[:,i+1] = mvar.prop( x, uList[:,i+1,None] )[:,0];
-        if i % 1 == 0:
+        u = mpc_var.solve( x, uList[:,i], verbose=0 )
+        uList[:,i+1] = u.reshape( Nu*P, );
+        xList[:,i+1] = m_var.prop( x, u[:,0] )[:,0];
+        if i % 10 == 0:
             print( 'time =', tList[0][i] );
-            # print( uList[:,i+1] );
-        # vhc.update( xList[:2,i+1,None] );
-        # vhc.draw();
+        #     print( 'x:', xList[:,i+1] );
+        #     print( uList[:,i+1] );
+        vhc.update( xList[:2,i+1,None] );
+        vhc.draw();
 
     fig, axs = plt.subplots();
     axs.plot( tList.T, xList.T );

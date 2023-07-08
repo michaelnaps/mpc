@@ -89,14 +89,14 @@ class Optimizer( Cost ):
                 # print("Gradient:  ", g);
                 print( "\n|g|:    \t", gnorm );
                 print( "New Cost: \t", self.cost( x )[0] );
-                print( "New Input:\n", x.reshape( shape ) );
+                print( "New Input:\n", x.reshape( shape ).T );
 
             if n > self.max_iter:
                 break;
             n += 1;
 
         # Return solution.
-        return x;
+        return x.reshape( shape );
 
 # Class: ModelPredictiveControl()
 # Assumptions:
