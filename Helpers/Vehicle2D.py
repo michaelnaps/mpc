@@ -28,7 +28,7 @@ class Vehicle2D:
         # vehicle parameters
         self.radius = radius;
         self.color = vhc_color;
-        self.trail_color = self.color;
+        self.tail_color = vhc_color;
         self.edge_color = 'k';
         self.zorder = zorder;  # needed when multiple vhc present
         self.label = None;
@@ -40,6 +40,10 @@ class Vehicle2D:
         self.linewidth = 2;
         self.linestyle = None;
 
+        # Forward tail variables (optional).
+        self.forward_tail = None;
+        self.forward_tail_color = None;
+
         # simulation pause
         self.pause = pause;
 
@@ -48,23 +52,18 @@ class Vehicle2D:
         if self.draw_tail:
             self.drawTail( np.kron( x0,np.ones( (1,self.Nt) ) ) );
 
-    def draw(self, block=0):
-        # show plot and pause
-        plt.show( block=block );
-        plt.pause( self.pause );
+    def initForwardTail(self, xList, color='orange'):
+        # Initialize forward tail.
+        self.forward_tail_color = color;
+        self.drawForwardTail( xList );
 
         # Return instance of self.
         return self;
 
-    def update(self, x):
-        # update vehicle location
-        self.body.remove();
-        self.drawVehicle( x );
-
-        # update tail location if applicable
-        if self.draw_tail:
-            self.tail_patch.remove();
-            self.drawTail( x );
+    def draw(self, block=0):
+        # show plot and pause
+        plt.show( block=block );
+        plt.pause( self.pause );
 
         # Return instance of self.
         return self;
@@ -90,10 +89,43 @@ class Vehicle2D:
             self.tail[:,-1] = x[:,0];
 
         # create vehicle tail object
-        self.tail_patch = patches.PathPatch(path.Path(self.tail.T),
-            color=self.color, linewidth=self.linewidth, linestyle=self.linestyle,
-            fill=0, zorder=self.tail_zorder);
+        self.tail_patch = patches.PathPatch( path.Path( self.tail.T ),
+            color=self.tail_color, linewidth=self.linewidth, linestyle=self.linestyle,
+            fill=0, zorder=self.tail_zorder );
         self.axs.add_patch( self.tail_patch );
+
+        # Return instance of self.
+        return self;
+
+    def drawForwardTail(self, xList):
+        # Initialize tail variables
+        self.forward_tail = patches.PathPatch( path.Path( xList.T ),
+            color=self.forward_tail_color, linewidth=self.linewidth, linestyle=self.linestyle,
+            fill=0, zorder=self.tail_zorder );
+
+        # Add patch.
+        self.axs.add_patch( self.forward_tail );
+
+    def update(self, x):
+        # update vehicle location
+        self.body.remove();
+        self.drawVehicle( x );
+
+        # update tail location if applicable
+        if self.draw_tail:
+            self.tail_patch.remove();
+            self.drawTail( x );
+
+        # Return instance of self.
+        return self;
+
+    def updateForwardTail(self, xList):
+        # Re-initialize forward tail.
+        self.forward_tail.remove();
+        self.drawForwardTail( xList );
+
+        # Add patch.
+        self.axs.add_patch( self.forward_tail );
 
         # Return instance of self.
         return self;
