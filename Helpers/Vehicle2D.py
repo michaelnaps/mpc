@@ -35,6 +35,7 @@ class Vehicle2D:
 
         # tail parameters
         self.draw_tail = draw_tail;
+        self.tail_zorder = zorder - 1;
         self.Nt = tail_length;
         self.linewidth = 2;
         self.linestyle = None;
@@ -91,7 +92,7 @@ class Vehicle2D:
         # create vehicle tail object
         self.tail_patch = patches.PathPatch(path.Path(self.tail.T),
             color=self.color, linewidth=self.linewidth, linestyle=self.linestyle,
-            fill=0, zorder=1);
+            fill=0, zorder=self.tail_zorder);
         self.axs.add_patch( self.tail_patch );
 
         # Return instance of self.
