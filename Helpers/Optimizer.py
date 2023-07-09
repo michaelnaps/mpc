@@ -49,6 +49,7 @@ class Optimizer( Cost ):
         Cost.__init__( self, g );
 
         # tolerance for zero and gradient descent step-size
+        self.max_iter = 10;
         self.eps = eps;  # zero-approximation
         self.alpha = 0.1;
 
@@ -87,15 +88,19 @@ class Optimizer( Cost ):
 
         n = 1;
         while gnorm > self.eps:
+            # Calculate new state, gradient and norm.
             x = self.step( x, dg );
             dg = self.grad( x );
             gnorm = np.linalg.norm( dg );
+
+            # If solution in verbose mode.
             if verbose:
                 # print("Gradient:  ", g);
                 print( "\n|g|:    \t", gnorm );
                 print( "New Cost: \t", self.cost( x )[0] );
                 print( "New Input:\n", x.reshape( shape ).T );
 
+            # If max number of iterations reached.
             if n > self.max_iter:
                 break;
             n += 1;
