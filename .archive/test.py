@@ -5,9 +5,9 @@ sys.path.insert(0, expanduser('~')+'/prog/mpc')
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Helpers.Plant import *
-from Helpers.Optimizer import *
-from Helpers.Vehicle2D import *
+from MPC.Plant import *
+from MPC.Optimizer import *
+from MPC.Vehicle2D import *
 
 # hyper parameter(s)
 P = 10;

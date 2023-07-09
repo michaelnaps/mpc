@@ -5,8 +5,8 @@ sys.path.insert(0, expanduser('~')+'/prog/mpc')
 import numpy as np
 import matplotlib.pyplot as plt
 
-import Helpers.Plant as plant
-import Helpers.Optimizer as opt
+import MPC.Plant as plant
+import MPC.Optimizer as opt
 
 def model(x, u):
     l = 1;

@@ -1,5 +1,5 @@
 import numpy as np
-from Helpers.Plant import *
+from MPC.Plant import *
 # from time import sleep
 
 def fdm2c(g, x, h=1e-6):

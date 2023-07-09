@@ -4,10 +4,10 @@ sys.path.insert(0, expanduser('~')+'/prog/mpc')
 sys.path.insert(0, expanduser('~')+'/prog/geom')
 
 from Geometry.Circle import *
-from Helpers.Vehicle2D import *
+from MPC.Vehicle2D import *
 
-import Helpers.Plant as plant
-import Helpers.Optimizer as opt
+import MPC.Plant as plant
+import MPC.Optimizer as opt
 
 
 # Hyper parameter(s).
