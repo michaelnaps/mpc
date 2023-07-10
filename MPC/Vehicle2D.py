@@ -41,7 +41,6 @@ class Vehicle2D:
         self.linestyle = None;
 
         # Forward tail variables (optional).
-        self.forward_tail = None;
         self.forward_tail_color = None;
 
         # simulation pause
@@ -63,8 +62,6 @@ class Vehicle2D:
     def draw(self, block=0):
         # show plot and pause
         plt.show( block=block );
-        plt.pause( self.pause );
-
         # Return instance of self.
         return self;
 
@@ -99,33 +96,43 @@ class Vehicle2D:
 
     def drawForwardTail(self, xList):
         # Initialize tail variables
-        self.forward_tail = patches.PathPatch( path.Path( xList.T ),
+        self.forward_tail_patch = patches.PathPatch( path.Path( xList.T ),
             color=self.forward_tail_color, linewidth=self.linewidth, linestyle=self.linestyle,
             fill=0, zorder=self.tail_zorder );
 
         # Add patch.
         self.axs.add_patch( self.forward_tail );
 
-    def update(self, x):
-        # update vehicle location
+        # Return instance of self.
+        return self;
+
+    def update(self, x, pause=1):
+        # Update vehicle location.
         self.body.remove();
         self.drawVehicle( x );
 
-        # update tail location if applicable
+        # Update tail location if applicable.
         if self.draw_tail:
             self.tail_patch.remove();
             self.drawTail( x );
+
+        # Pause plotting/sim if requested.
+        if pause:
+            plt.pause( self.pause );
 
         # Return instance of self.
         return self;
 
     def updateForwardTail(self, xList):
         # Re-initialize forward tail.
-        self.forward_tail.remove();
+        print('---------------------------------------------');
+        print( self.forward_tail_patch );
+        self.forward_tail_patch.remove();
+        print( self.forward_tail_patch );
         self.drawForwardTail( xList );
 
         # Add patch.
-        self.axs.add_patch( self.forward_tail );
+        self.axs.add_patch( self.forward_tail_patch );
 
         # Return instance of self.
         return self;
