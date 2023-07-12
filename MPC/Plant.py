@@ -1,4 +1,4 @@
-# File: System.py
+# File: Plant.py
 # Classes: Model()
 
 import numpy as np
