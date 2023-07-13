@@ -79,17 +79,37 @@ Where $G$ is simply used here to represent the set of costs which exist for the 
 The optimization now becomes a minimization of the total cost over the $P$-prediction horizons.
 
 $$
-    X^\*, U^\* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_k, u_k) + g_P(x_P) \right)
+    X^*, U^* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_k, u_k) + g_P(x_P) \right)
 $$
 
-Where $U^\*$ represents the set of optimal policies as defined by the cost function solved for over the prediction horizon, and $X^\*$ is the optimal state predictions as accumulated through $U^\*$.
+Where $U^*$ represents the set of optimal policies as defined by the cost function solved for over the prediction horizon, and $X^*$ is the optimal state predictions as accumulated through $U^*$. It is important to note that the optimal states over the prediction are simply a *byproduct* of the optimization problem and are at most used as a tuning reference post-runtime.
+
+In most, if not all cases, the optimization problem can be further simplified by the assumption that the intial state, $x_0$, does not change as the optimizer iterates. While the initial state impacts the magnitude of the total cost, it is a constant value as no control can change its position. For this reason it can be remove from the cost space completely and we can rewrite the cost space definition as
+
+$$
+    G = \\{ g_k(x_{k+1}, u_k)\ \forall x_{k+1} \in X, u_k \in U \\}
+$$
+
+and replacing the optimization statement with
+
+$$
+    X^*, U^* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) \right).
+$$
+
+In this form we ignore the initial state, giving a slightly more concise cost function.
 
 
 ___
 
 ## **Gradient Descent**
 
-**description coming soon**
+Now that the optimization problem is defined more thoroughly, the steps used to solve it can be expressed. Here, the nonlinear gradient descent (NGD) approach will be discussed, and its pseudocode given.
+
+First, let us define the stopping point to the optimization process. This occurs when the cost function is at a *local minimum*, or when the derivative of the cost function is equal to 0.
+
+$$
+    \frac{\partial}{\partial u} \left( \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) \right) = 0
+$$
 
 
 ___
