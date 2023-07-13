@@ -30,18 +30,19 @@ class Vehicle2D:
         self.color = vhc_color;
         self.tail_color = vhc_color;
         self.edge_color = 'k';
-        self.zorder = zorder;  # needed when multiple vhc present
+        self.zorder = zorder + 10;  # needed when multiple vhc present
         self.label = None;
 
         # tail parameters
         self.draw_tail = draw_tail;
-        self.tail_zorder = zorder - 1;
+        self.tail_zorder = zorder;
         self.Nt = tail_length;
         self.linewidth = 2;
         self.linestyle = None;
 
         # Forward tail variables (optional).
         self.forward_tail_color = None;
+        self.forward_tail_patch = None;
 
         # simulation pause
         self.pause = pause;
@@ -60,7 +61,6 @@ class Vehicle2D:
         return self;
 
     def draw(self, block=0):
-        # show plot and pause
         plt.show( block=block );
         # Return instance of self.
         return self;
@@ -98,10 +98,10 @@ class Vehicle2D:
         # Initialize tail variables
         self.forward_tail_patch = patches.PathPatch( path.Path( xList.T ),
             color=self.forward_tail_color, linewidth=self.linewidth, linestyle=self.linestyle,
-            fill=0, zorder=self.tail_zorder );
+            fill=0, zorder=self.tail_zorder+5 );
 
         # Add patch.
-        self.axs.add_patch( self.forward_tail );
+        self.axs.add_patch( self.forward_tail_patch );
 
         # Return instance of self.
         return self;
@@ -125,14 +125,8 @@ class Vehicle2D:
 
     def updateForwardTail(self, xList):
         # Re-initialize forward tail.
-        print('---------------------------------------------');
-        print( self.forward_tail_patch );
         self.forward_tail_patch.remove();
-        print( self.forward_tail_patch );
         self.drawForwardTail( xList );
-
-        # Add patch.
-        self.axs.add_patch( self.forward_tail_patch );
 
         # Return instance of self.
         return self;
