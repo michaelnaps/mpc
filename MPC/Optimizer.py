@@ -76,7 +76,7 @@ class Optimizer( Cost ):
         if self.solver == 'ngd':
             self.step = lambda x, dg: x - self.alpha*dg;
         if self.solver == 'nno':
-            self.step = None;  # not setup
+            self.step = lambda x, dg: x - np.linalg.inv( self.hess( x ) )@dg;
 
         # Return instance of self.
         return self;
@@ -117,9 +117,9 @@ class Optimizer( Cost ):
 #       G(X,U) = G(X[1:],U)
 class ModelPredictiveControl( Model, Optimizer ):
     def __init__(self, F, g,
-            P=10, k=1, Nx=1, Nu=1, dt=1e-3,
-            model_type='discrete',
-            cost_type='instant'):
+            P=10, k=1, Nx=1, Nu=1, dt=1e-3, eps=1e-6,
+            model_type='discrete', cost_type='instant',
+            solver='ngd'):
         # Save model to inherited class.
         Model.__init__( self, F,
                 dt=dt, model_type=model_type );
@@ -127,7 +127,8 @@ class ModelPredictiveControl( Model, Optimizer ):
         # Initialize optimizer with g=None.
         self.cost_type = cost_type;
         self.givencost = g;
-        Optimizer.__init__(self, None);  # fragile
+        Optimizer.__init__( self, None,
+            eps=eps, solver=solver );  # fragile
 
         # Dimensions parameters.
         self.P = P;
@@ -178,7 +179,7 @@ class ModelPredictiveControl( Model, Optimizer ):
     def costFunctionGenerator(self, x0):
         # Generate cost function around x0.
         return lambda uList: \
-            self.costPrediction( x0, uList.reshape( self.Nu,self.P ) );
+            self.costPrediction( x0, uList.reshape( self.Nu, self.P ) );
 
     def solve(self, x0, uinit, verbose=0):
         # If necessary set Nx to number of states.
