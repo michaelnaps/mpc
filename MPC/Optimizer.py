@@ -4,8 +4,8 @@ from MPC.Plant import *
 
 def fdm2c(g, x, h=1e-6):
     # initialize parameters
-    Nx = len( x )        # dimension of input
-    Ng = len( g(x) )     # dimension of output
+    Nx = x.shape[0]        # dimension of input
+    Ng = g(x).shape[0]     # dimension of output
 
     # calculate derivative at each input
     grad = np.empty( (Nx,Ng) )
@@ -184,7 +184,7 @@ class ModelPredictiveControl( Model, Optimizer ):
     def solve(self, x0, uinit, verbose=0):
         # If necessary set Nx to number of states.
         if self.Nx is None:
-            self.Nx = len( x0 )
+            self.Nx = x0.shape[0]
 
         # Initialize optimization variable with cost generator.
         self.setObjectiveFunction( self.costFunctionGenerator( x0 ) )
