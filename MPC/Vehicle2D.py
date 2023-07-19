@@ -7,7 +7,7 @@ from matplotlib import path
 # Class: Vehicle2D
 # Assumptions: Model is discrete.
 class Vehicle2D:
-    def __init__(self, F, x0, radius=0.5,
+    def __init__(self, x0, radius=0.5,
             fig=None, axs=None, zorder=10,
             vhc_color='yellowgreen',
             draw_tail=1, tail_length=100,
@@ -50,7 +50,7 @@ class Vehicle2D:
         # draw vehicle and tail
         self.drawVehicle( x0 )
         if self.draw_tail:
-            self.drawTail( np.kron( x0,np.ones( (1,self.Nt) ) ) )
+            self.drawTail( np.kron( x0 ,np.ones( (1, self.Nt) ) ) )
 
     def initForwardTail(self, xList, color='orange'):
         # Initialize forward tail.
