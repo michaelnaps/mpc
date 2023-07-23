@@ -138,11 +138,3 @@ ___
     <img src=./Examples/.figures/donald.gif width=450>
 </p>
 
-___
-**NOTE:** If a Hessian matrix is block diagonal then its inverse can be found by inverting each of its elements. In other words,
-
-$$
-    \texttt{diag}(D_1, D_2, D_3)^{-1} = \texttt{diag}(D_1^{-1}, D_2^{-1}, D_3^{-1})
-$$
-
-May be able to exploit this to remove **numpy** dependency from **nno**.
