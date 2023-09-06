@@ -138,3 +138,6 @@ ___
     <img src=./Examples/.figures/donald.gif width=450>
 </p>
 
+<p align='center'>
+    <img src='https://github.com/michaelnaps/roomba_draws/master/.figures/drawhat_n50.gif' width=450>
+</p>
