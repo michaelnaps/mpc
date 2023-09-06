@@ -135,9 +135,6 @@ ___
 ## **Application:** Differential Drive Robot
 
 <p align='center'>
-    <img src=./Examples/.figures/donald.gif width=450>
-</p>
-
-<p align='center'>
-    <img src='https://github.com/michaelnaps/roomba_draws/master/.figures/drawhat_n50.gif' width=450>
+    <img src=./Examples/.figures/donald.gif width=350>
+    <img src='https://github.com/michaelnaps/roomba_draws/blob/master/.figures/drawhat_n50.gif' width=350>
 </p>
