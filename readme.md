@@ -9,9 +9,7 @@ ___
 
 The model predictive control (MPC) architecture is a powerful tool in the realm of control theory. It defines the process of looking into future states of a system (as governed by predetermined model equations) and selecting the most appropriate set of controls with respect to some cost/objective function. The set of commands and libraries presented here serves as my personal testing ground for the solutions to the MPC formulation - and is in no way a competitor with more professional libraries.
 
-<!--
-The library is currently being optimized for use in **MicroPython** and thus has been modified so that it does not require a **numpy** dependency - removing the need to install third-party libraries on the microcontroller of interest. The **nno** control strategy, as referenced in my undergraduate thesis, can be found on the branch of the library titled **nno_save**. It will be reimplemented in the future. The following sections of the **readme** will discuss the MPC policy structure and show demonstrations when applicable.
--->
+For some animations of the system at work, you can skip the description and scroll to the bottom of the *readme.md*.
 
 **Final Note:** The classes and associated functions shown here are in no way complete. It is my hope to use the model predictive control architecture as a platform for introducing myself to various optimization strategies. I intend to develop the library whenever I have free time and new ideas as inspired by my studies. I have identified that the library's biggest flaw is the lack of alternatives to gradient descent-based approaches, and the inexistance of any LP-oriented optimization strategies. These will hopefully be explored more thoroughly in the future.
 
