@@ -7,9 +7,7 @@ ___
 
 ## **Introduction**
 
-The model predictive control (MPC) architecture is a powerful tool in the realm of control theory. It defines the process of looking into future states of a system (as governed by predetermined model equations) and selecting the most appropriate set of controls with respect to some cost/objective function. The set of commands and libraries presented here serves as my personal testing ground for the solutions to the MPC formulation - and is in no way a competitor with more professional libraries (see final note below).
-
-I am currently in the process of splitting the class **ModelPredictiveControl()** into a system of subclasses. Each subclass will be dedicated to one portion of the standard MPC framework, and culminate into the MPC optimizer. These subclasses consist of the **Model()** class, the **Cost()** class and the **Optimizer()** class (which contains the optimization members). My hope is that this will present the library in a more readable/approachable form as well as make future implementations of MPC more robust.
+The model predictive control (MPC) architecture is a powerful tool in the realm of control theory. It defines the process of looking into future states of a system (as governed by predetermined model equations) and selecting the most appropriate set of controls with respect to some cost/objective function. The set of commands and libraries presented here serves as my personal testing ground for the solutions to the MPC formulation - and is in no way a competitor with more professional libraries.
 
 <!--
 The library is currently being optimized for use in **MicroPython** and thus has been modified so that it does not require a **numpy** dependency - removing the need to install third-party libraries on the microcontroller of interest. The **nno** control strategy, as referenced in my undergraduate thesis, can be found on the branch of the library titled **nno_save**. It will be reimplemented in the future. The following sections of the **readme** will discuss the MPC policy structure and show demonstrations when applicable.
