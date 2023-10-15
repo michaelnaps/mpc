@@ -2,7 +2,6 @@ The work conducted here was initially completed in the Ohio State University und
 
 **Thesis:** https://kb.osu.edu/handle/1811/101702
 
-
 ___
 
 ## **Introduction**
@@ -13,7 +12,6 @@ For some animations of the system at work, you can skip the description and scro
 
 **Final Note:** The classes and associated functions shown here are in no way complete. It is my hope to use the model predictive control architecture as a platform for introducing myself to various optimization strategies. I intend to develop the library whenever I have free time and new ideas as inspired by my studies. I have identified that the library's biggest flaw is the lack of alternatives to gradient descent-based approaches, and the inexistance of any LP-oriented optimization strategies. These will hopefully be explored more thoroughly in the future.
 
-
 ___
 
 ## **Model Predictive Control**
@@ -23,7 +21,6 @@ Overall, the MPC decision scheme follows the diagram below.
 <p align='center'>
     <img src=./Examples/.figures/mpc_decision_structure.png width=450>
 </p>
-
 
 ### 1. *Definition of a Model and Prediction Horizon*
 First, the generalized MPC will be defined so that each of the following sections can be spent investigating a method of finding the solution to the problem.
@@ -49,7 +46,6 @@ $$
 $$
 
 A placeholder $0$ is used to represent the control at $k=N_P+1$. It is important to note that in some notations $u_k$ is defined as $u_k \in \mathbb{U}(x_k)$; implying that the input is a member of the set of *allowable* controls at a given state, $x_k$. In the applications shown here, the set allowable controls are equivalent at all states - even if some may be considered impossible in the real-world. Particulary, $\mathbb{U} \subseteq \mathbb{U} (x)\ \forall x$.
-
 
 ### 2. *Definition of Period and Terminal Costs*
 
@@ -89,11 +85,10 @@ $$
 and replacing the optimization statement with
 
 $$
-    X^\*, U^\* = \min_{X,U} \left( \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) \right).
+    X^\*, U^\* = \min_{X,U} \\ \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) ||.
 $$
 
 In this form we ignore the initial state, giving a slightly more concise cost function.
-
 
 ___
 
@@ -101,19 +96,19 @@ ___
 
 Now that the optimization problem is defined more thoroughly, the steps used to solve it can be expressed. Here, the nonlinear gradient descent (NGD) approach will be discussed, and its pseudocode given.
 
-First, let us define the stopping point to the optimization process. This occurs when the cost function is at a *local minimum*, or when the derivative of the cost function is equal to 0.
+First, let us define the stopping point to the optimization process. This occurs when the cost function is at a *local minimum*, or when the partial derivative w.r.t. the inputs of the cost function is equal to 0.
 
 $$
-    \frac{\partial}{\partial u} \left( \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) \right) = 0
+    \frac{\partial}{\partial U} \left( \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) \right) = 0 \in \mathbb{R}^{m \times P}
 $$
 
+It has been proven (see references below) that the derivative of a continuously differentiable function always points towards the maximum of said function. For this reason, we define the gradient step as...
 
 ___
 
 ## **Nonlinear Newton's Optimization**
 
 **description coming soon**
-
 
 ___
 
@@ -124,7 +119,6 @@ ___
 <p align='center'>
     <img src=./Examples/.figures/sphereworld.gif width=450>
 </p>
-
 
 ___
 
