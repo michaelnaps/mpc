@@ -92,23 +92,65 @@ In this form we ignore the initial state, giving a slightly more concise cost fu
 
 ___
 
-## **Gradient Descent**
+## **Iterative Minimization Algorithm**
 
-Now that the optimization problem is defined more thoroughly, the steps used to solve it can be expressed. Here, the nonlinear gradient descent (NGD) approach will be discussed, and its pseudocode given.
-
-First, let us define the stopping point to the optimization process. This occurs when the cost function is at a *local minimum*, or when the partial derivative w.r.t. the inputs of the cost function is equal to 0.
+Now that the optimization problem is defined more thoroughly, the steps used to solve it can be expressed. First, let us define the stopping point to the optimization process. This occurs when the cost function is at a *local minimum*, or when the partial derivative w.r.t. the inputs of the cost function is equal to 0.
 
 $$
-    \frac{\partial}{\partial U} \left( \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) \right) = 0 \in \mathbb{R}^{m \times P}
+    \nabla G = \frac{\partial}{\partial U} \left( \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) \right) = 0 \in \mathbb{R}^{m \times P}
 $$
 
-It has been proven (see references below) that the derivative of a continuously differentiable function always points towards the maximum of said function. For this reason, we define the gradient step as...
+In practice, it will be more realistic to attempt to find an *approximately* optimal solution. That is,
+
+$$
+    ||\nabla G|| \leq \varepsilon
+$$
+
+where $\varepsilon \in \mathbb{R}$ and represents the first-order optimality stopping condition. It has been proven (see references below) that the derivative of a continuously differentiable function always points towards the maximum of said function. For this reason, we define the iterative search algorithm as
+
+$$
+    U_{i+1} = U_i - \beta(X,U) \nabla G
+$$
+
+where we will select the step-size function $\beta(X,U)$ for various use cases.
+
+___
+
+## **Nonlinear Gradient Descent**
+
+In the nonlinear gradient descent (NGD, or steep-descent) algorithm, the step-size function $\beta(X,U) = \alpha \in \mathbb{R}$. That is,
+
+$$
+    U_{i+1} = U_i - \alpha \nabla G.
+$$
+
+In this case, the optimization takes the simplest available step towards the minimum. This method is efficient in cases where the set $X$ (and subsequently $U$) are large. Other optimization approaches will prove to have lower efficiency in these cases.
 
 ___
 
 ## **Nonlinear Newton's Optimization**
 
-**description coming soon**
+The nonlinear Newton's optimization makes the assumption that the cost function approximates a quadratic function and utilizes the second derivative of $G$ (or, hessian) to derive the nearest optimal minimum. The hessian is defined as
+
+$$
+    \nabla^2 G = \frac{\partial}{\partial U}(\nabla G).
+$$
+
+We thus set the step-size function to
+
+$$
+    \beta(X,U) = \alpha (\nabla^2 G)^{-1}
+$$
+
+making the optimization
+
+$$
+    U_{i+1} = U_i - \alpha (\nabla^2 G)^{-1} \nabla G.
+$$
+
+This method can be proven to be exact with $\alpha=1$ and in cases where the objective function is strictly quadratic. In cases where the objective is not quadratic, it is common to take $\alpha < 1$ and iterate till below the threshold $\varepsilon$.
+
+While this method often converges in many fewer steps than the NGD method, it is computationally much more expensive. Implying that in problems where $X$ is large, it may not be applicable.
 
 ___
 
