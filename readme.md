@@ -85,7 +85,7 @@ $$
 and replacing the optimization statement with
 
 $$
-    X^\*, U^\* = \min_{X,U} \\ \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k) ||.
+    X^\*, U^\* = \min_{X,U} \\ \sum_{k=0}^{P-1} g_k(x_{k+1}, u_k).
 $$
 
 In this form we ignore the initial state, giving a slightly more concise cost function.
