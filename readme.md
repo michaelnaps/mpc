@@ -156,7 +156,7 @@ ___
 
 ## **Application:** Sphere World Environment
 
-**description coming soon...** For some information on the right most image see **michaelnaps/roomba_draws.git**
+**description coming soon...**
 
 <p align='center'>
     <img src=./Examples/.figures/sphereworld.gif width=450>
@@ -165,6 +165,8 @@ ___
 ___
 
 ## **Application:** Differential Drive Robot
+
+For some information on the right most image see **michaelnaps/roomba_draws.git**
 
 <p align='center'>
     <img src=./Examples/.figures/donald.gif width=350>
