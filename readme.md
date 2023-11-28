@@ -156,7 +156,7 @@ ___
 
 ## **Application:** Sphere World Environment
 
-**description coming soon**
+**description coming soon...** For some information on the right most image see **michaelnaps/roomba_draws.git**
 
 <p align='center'>
     <img src=./Examples/.figures/sphereworld.gif width=450>
