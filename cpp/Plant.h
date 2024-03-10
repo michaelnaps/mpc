@@ -15,23 +15,28 @@ namespace nap {
     class Plant
     {
     private:
+        // VARIABLES:
         std::string model_type;
         double time_step;
 
     protected:
+        //VARIABLES:
         MatrixXd (*model)(MatrixXd, MatrixXd);
 
+        // PRIVATE MEMBER FUNCTIONS:
+        MatrixXd templateModel(MatrixXd x, MatrixXd u);
+
     public:
+        // VARIABLES:
+        MatrixXd (*prop)(MatrixXd, MatrixXd);
+
         // CONSTRUCTORS:
         Plant(MatrixXd (*F)(MatrixXd, MatrixXd));
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const std::string& type, const double& dt);
+        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const std::string &type, const double &dt);
 
         // ACCESSOR FUNCTIONS:
         std::string getModelType();
         double getTimeStep();
-
-        // MEMBER FUNCTIONS:
-        MatrixXd prop(MatrixXd x, MatrixXd u);
     };
 }
 
