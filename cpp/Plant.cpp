@@ -8,20 +8,26 @@ namespace nap {
     }
 
     // CONSTRUCTORS:
-    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd)) : time_step(1e-3), model_type("continuous")
+
+    // Input(s):
+    //      F: Model function.
+    // Default variables:
+    //      time_step = 1e-3
+    //      model_type = "discrete"
+    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd)) : model_type("discrete"), time_step(1e-3)
     {
         model = F;
     }
-    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt) : model_type("continuous")
+
+    // Input(s):
+    //      F: Model function.
+    //      model_type: Either continuous or discrete.
+    //      time_step: Length of time-step.
+    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const std::string& type, const double& dt)
     {
         model = F;
-        time_step = dt;
-    }
-    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt, const std::string& type)
-    {
-        model = F;
-        time_step = dt;
         model_type = type;
+        time_step = dt;
     }
 
     // MEMBER FUNCTIONS:

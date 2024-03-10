@@ -24,8 +24,7 @@ namespace nap {
     public:
         // CONSTRUCTORS:
         Plant(MatrixXd (*F)(MatrixXd, MatrixXd));
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt);
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt, const std::string& type);
+        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const std::string& type, const double& dt);
 
         // ACCESSOR FUNCTIONS:
         double getTimeStep();
