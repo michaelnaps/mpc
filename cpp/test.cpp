@@ -1,5 +1,6 @@
 #include <iostream>
 #include <eigen3/Eigen/Dense>
+#include "Plant.cpp"
 
 using Eigen::MatrixXd;
 using namespace std;
@@ -21,6 +22,7 @@ int main()
 {
     MatrixXd M(2,2);
     MatrixXd x(2,1);
+    nap::Plant P;
 
     // Matrix init.
     M(0,0) = 3;
@@ -29,7 +31,7 @@ int main()
     M(1,1) = M(1,0) + M(0,1);
 
     // Vector init.
-    x(0,0) = 1;  x(1,0) = 2;
+    x << 1, 2.5;
 
     // Output.
     cout << M << endl;
@@ -39,6 +41,6 @@ int main()
 
     // Testing function pass.
     MatrixXd y(2,1);
-    y(0,0) = 0.1;  y(1,0) = 1;
+    y << 1, 2;
     cout << squared_addition(x, y, addition) << endl;
 }
