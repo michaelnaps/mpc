@@ -7,8 +7,7 @@ namespace nap {
         return x + dt*F( x, u );
     }
 
-    // CONSTRUCTORS:
-
+// CONSTRUCTORS:
     // Input(s):
     //      F: Model function.
     // Default variables:
@@ -30,7 +29,11 @@ namespace nap {
         time_step = dt;
     }
 
-    // MEMBER FUNCTIONS:
+// ACCESSOR FUNCTIONS:
+    std::string Plant::getModelType() { return model_type; }
+    double Plant::getTimeStep() { return time_step; }
+
+// MEMBER FUNCTIONS:
     MatrixXd Plant::prop(MatrixXd x, MatrixXd u)
     {
         return model( x, u );

@@ -15,8 +15,8 @@ namespace nap {
     class Plant
     {
     private:
-        double time_step;
         std::string model_type;
+        double time_step;
 
     protected:
         MatrixXd (*model)(MatrixXd, MatrixXd);
@@ -27,8 +27,8 @@ namespace nap {
         Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const std::string& type, const double& dt);
 
         // ACCESSOR FUNCTIONS:
-        double getTimeStep();
         std::string getModelType();
+        double getTimeStep();
 
         // MEMBER FUNCTIONS:
         MatrixXd prop(MatrixXd x, MatrixXd u);
