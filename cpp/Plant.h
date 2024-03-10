@@ -8,9 +8,7 @@ using namespace std;
 #define MPC_PLANT
 
 namespace nap {
-    MatrixXd TaylorMethod(
-        MatrixXd (*F)(MatrixXd, MatrixXd),
-        MatrixXd x, MatrixXd u, double dt);
+    MatrixXd TaylorMethod(MatrixXd (*F)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt);
 
     class Plant
     {
