@@ -32,17 +32,28 @@ namespace nap {
     }
 
 // ACCESSOR FUNCTIONS:
+    // Function: Plant.getModelType()
+    // Output: Model type (string).
     std::string Plant::getModelType()
     {
         return model_type;
     }
+
+    // Function: Plant.getTimeStep()
+    // Output: Time step of plant model (double).
     double Plant::getTimeStep()
     {
         return time_step;
     }
 
 // MEMBER FUNCTIONS:
-    MatrixXd Plant::templateModel(MatrixXd x, MatrixXd u)
+    // Function: Plant.cprop()
+    // Stand-in till a better method for discrete/continuous functions.
+    // Input(s):
+    //      x: State of plant at time, t.
+    //      u: User-input (control term).
+    // Output(s): Next step of plant simulation.
+    MatrixXd Plant::cprop(MatrixXd x, MatrixXd u)
     {
         return TaylorMethod( model, x, u, time_step );
     }
