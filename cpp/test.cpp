@@ -16,8 +16,8 @@ MatrixXd model(MatrixXd x, MatrixXd u)
 
 int main()
 {
-    nap::Plant P(model, "discrete", 1e-5);
-    MatrixXd x0(3,1); x0 << 2, 2, 0.75;
-    MatrixXd uX(3,1);
+    nap::Plant P( model );
+    MatrixXd x0( 3, 1 ); x0 << 2, 2, 0.75;
+    MatrixXd uX( 3, 1 );
     cout << P.prop( x0, uX ) << endl;
 }
