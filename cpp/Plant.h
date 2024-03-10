@@ -35,6 +35,9 @@ namespace nap {
         // ACCESSOR FUNCTIONS:
         std::string getModelType();
         double getTimeStep();
+
+        // MEMBER FUNCTIONS:
+        MatrixXd cprop(MatrixXd x, MatrixXd u);
     };
 }
 
