@@ -2,38 +2,31 @@
 #include "Plant.h"
 
 namespace nap {
-    MatrixXd TaylorMethod(
-        MatrixXd (*F)(MatrixXd, MatrixXd),
-        MatrixXd x, MatrixXd u, double dt)
-        {
-            return x + dt*F( x, u );
-        }
-
-    class Plant
+    MatrixXd TaylorMethod(MatrixXd (*F)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt)
     {
-    private:
-        double dt;
-        std::string model_type;
+        return x + dt*F( x, u );
+    }
 
-    protected:
-        MatrixXd (*model)(MatrixXd, MatrixXd);
+    // CONSTRUCTORS:
+    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd)) : time_step(1e-3), model_type("continuous")
+    {
+        model = F;
+    }
+    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt) : model_type("continuous")
+    {
+        model = F;
+        time_step = dt;
+    }
+    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt, const std::string& type)
+    {
+        model = F;
+        time_step = dt;
+        model_type = type;
+    }
 
-    public:
-        // CONSTRUCTORS:
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd));
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt);
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const double& dt, const std::string& model_type);
-
-        // ACCESSOR FUNCTIONS:
-        double getTimeStep();
-        std::string getModelType();
-
-        // MEMBER FUNCTIONS:
-        Plant::prop(MatrixXd x, MatrixXd u)
-        {
-            return model( x, u )
-        }
-    };
+    // MEMBER FUNCTIONS:
+    MatrixXd Plant::prop(MatrixXd x, MatrixXd u)
+    {
+        return model( x, u );
+    }
 }
-
-#endif

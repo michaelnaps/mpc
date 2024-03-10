@@ -5,42 +5,19 @@
 using Eigen::MatrixXd;
 using namespace std;
 
-MatrixXd squared_addition(
-    MatrixXd x,
-    MatrixXd y,
-    MatrixXd (*add)(MatrixXd, MatrixXd))
+MatrixXd model(MatrixXd x, MatrixXd u)
 {
-    return add(x.transpose()*x, y.transpose()*y);
-}
-
-MatrixXd addition(MatrixXd x, MatrixXd y)
-{
-    return x + y;
+    MatrixXd M(3,3);
+    M << 1, 1, 2,
+         2, 1, 0,
+         0.5, 1, 0;
+    return M*x;
 }
 
 int main()
 {
-    MatrixXd M(2,2);
-    MatrixXd x(2,1);
-    nap::Plant P;
-
-    // Matrix init.
-    M(0,0) = 3;
-    M(1,0) = 2.5;
-    M(0,1) = -1;
-    M(1,1) = M(1,0) + M(0,1);
-
-    // Vector init.
-    x << 1, 2.5;
-
-    // Output.
-    cout << M << endl;
-    cout << x << endl;
-    cout << M*x << endl;
-    cout << "------" << endl;
-
-    // Testing function pass.
-    MatrixXd y(2,1);
-    y << 1, 2;
-    cout << squared_addition(x, y, addition) << endl;
+    nap::Plant P(model, 1e-5, "discrete");
+    MatrixXd x0(3,1); x0 << 2, 2, 0.75;
+    MatrixXd uX(3,1);
+    cout << P.prop( x0, uX ) << endl;
 }
