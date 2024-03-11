@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <eigen3/Eigen/Dense>
 
@@ -8,7 +9,7 @@ using namespace std;
 #define MPC_PLANT
 
 namespace nap {
-    MatrixXd TaylorMethod(MatrixXd (*F)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt);
+    MatrixXd TaylorMethod(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt);
 
     class Plant
     {
@@ -29,8 +30,8 @@ namespace nap {
         MatrixXd (*prop)(MatrixXd, MatrixXd);
 
         // CONSTRUCTORS:
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd));
-        Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const std::string &type, const double &dt);
+        Plant(MatrixXd (*f)(MatrixXd, MatrixXd));
+        Plant(MatrixXd (*f)(MatrixXd, MatrixXd), const std::string &type, const double &dt);
 
         // ACCESSOR FUNCTIONS:
         std::string getModelType();

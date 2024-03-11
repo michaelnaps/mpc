@@ -3,30 +3,30 @@
 
 namespace nap {
 // HELPER FUNCTIONS:
-    MatrixXd TaylorMethod(MatrixXd (*F)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt)
+    MatrixXd TaylorMethod(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt)
     {
-        return x + dt*F( x, u );
+        return x + dt*f( x, u );
     }
 
 // CONSTRUCTORS:
     // Input(s):
-    //      F: Model function.
+    //      f: Model function.
     // Default variables:
     //      time_step = 1e-3
     //      model_type = "discrete"
-    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd)) : prop(F), model_type("discrete"), time_step(1e-3)
+    Plant::Plant(MatrixXd (*f)(MatrixXd, MatrixXd)) : prop(f), model_type("discrete"), time_step(1e-3)
     {
-        model = F;
+        model = f;
         prop = model;
     }
 
     // Input(s):
-    //      F: Model function.
+    //      f: Model function.
     //      model_type: Either continuous or discrete.
     //      time_step: Length of time-step.
-    Plant::Plant(MatrixXd (*F)(MatrixXd, MatrixXd), const std::string &type, const double &dt) : prop(F)
+    Plant::Plant(MatrixXd (*f)(MatrixXd, MatrixXd), const std::string &type, const double &dt) : prop(f)
     {
-        model = F;
+        model = f;
         model_type = type;
         time_step = dt;
     }
