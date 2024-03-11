@@ -42,6 +42,9 @@ namespace nap
         // Calculate cost at each horizon window.
         MatrixXd g(1,1); g(0,0) = 0;
         for (int i(0); i < horz_length; ++i) {
+            cout << "---" << endl;
+            cout << x.col(i).transpose() << endl;
+            cout << g << ' ' << cost( x.col(i) ) << endl;
             g += cost( x.col(i) );
         }
 
