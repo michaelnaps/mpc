@@ -47,6 +47,7 @@ namespace nap
         return g;
     }
 
+// Class: Cost()
     Cost::Cost(MatrixXd (*g)(MatrixXd)) : step_size(1e-6)
     {
         cost = g;
@@ -63,6 +64,7 @@ namespace nap
         return fdm2c(cost, x, step_size);
     }
 
+// Class: Optimizer()
     Optimizer::Optimizer(MatrixXd (*g)(MatrixXd)) : Cost(g), max_iter(1000), epsilon(1e-3), alpha(0.1), method("ngd")
     {
     }
@@ -78,7 +80,7 @@ namespace nap
     MatrixXd Optimizer::step(MatrixXd x, MatrixXd dg)
     {
         // TODO: Alternative step methods.
-        return x - alpha*dg;  // Steepest descent (ngd).
+        return x - alpha*dg;  // Nonlinear gradient descent (ngd).
     }
 
     MatrixXd Optimizer::solve(MatrixXd x0)
@@ -97,6 +99,7 @@ namespace nap
 
             // If maximum number of iterations reached.
             if (n == max_iter) {
+                cout << "Iteration break." << endl;
                 break;
             }
             n += 1;
