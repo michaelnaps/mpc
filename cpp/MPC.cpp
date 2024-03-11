@@ -3,13 +3,14 @@
 
 namespace nap
 {
-    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd)) : Plant(f), Optimizer(g), horz_length(10), knot_length(1)
-    {
-    }
+    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd)) : Plant(f), Optimizer(g), horz_length(10), knot_length(1) {}
 
     void ModelPredictiveControl::setInitialConditions(MatrixXd x0)
     {
+        // Set initial conditions.
         xinit = x0;
+
+        // Return nothing.
         return;
     }
 
@@ -41,7 +42,6 @@ namespace nap
         // Calculate cost at each horizon window.
         MatrixXd g(1,1); g(0,0) = 0;
         for (int i(0); i < horz_length; ++i) {
-            cout << g << ' ' << cost( x.col(i) ) << endl;
             g += cost( x.col(i) );
         }
 
@@ -51,8 +51,10 @@ namespace nap
 
     MatrixXd ModelPredictiveControl::costPrediction(MatrixXd x0, MatrixXd ulist)
     {
-        // Set initial conditions and solve for cost of horizon.
+        // Set initial conditions.
         setInitialConditions( x0 );
+
+        // Calculate and return cost of horizon.
         return costPrediction( ulist );
     }
 }

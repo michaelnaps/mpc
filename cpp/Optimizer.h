@@ -4,8 +4,8 @@
 using Eigen::MatrixXd;
 using namespace std;
 
-#ifndef MPC_OBJECTIVE
-#define MPC_OBJECTIVE
+#ifndef MPC_OPTIMIZER
+#define MPC_OPTIMIZER
 
 namespace nap {
     class Cost {
