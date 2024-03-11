@@ -23,7 +23,7 @@ MatrixXd model(MatrixXd x, MatrixXd u)
 
 int main()
 {
-    nap::Cost g( cost );
+    nap::Optimizer g( cost );
     MatrixXd x( 3, 1 ); x << 2, 2, 0.75;
-    cout << g.gradient( x ) << endl;
+    cout << g.solve( x ) << endl;
 }
