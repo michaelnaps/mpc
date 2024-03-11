@@ -17,7 +17,8 @@ MatrixXd model(MatrixXd x, MatrixXd u)
 
 int main()
 {
-    nap::Optimizer g( cost );
+    nap::ModelPredictiveControl mpcvar( model, cost );
     MatrixXd x( 3, 1 );  x << 100, 55, 243;
-    cout << g.solve( x ) << endl;
+    MatrixXd uinit( 3,10 );  uinit << Eigen::ArrayXXd::Zero(3,10);
+    cout << mpcvar.costPrediction( x, uinit ) << endl;
 }

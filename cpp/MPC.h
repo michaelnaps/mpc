@@ -17,7 +17,7 @@ namespace nap {
 
     protected:
         // PROTECTED MEMBER FUNCTIONS:
-        void setInitialCondition(MatrixXd x0);
+        void setInitialConditions(MatrixXd x0);
         MatrixXd costPrediction(MatrixXd ulist);
 
     public:

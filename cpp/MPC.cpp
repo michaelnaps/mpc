@@ -3,13 +3,30 @@
 
 namespace nap
 {
-    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd)) : Plant(f), Optimizer(g), P(10), k(1)
+    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd)) : Plant(f), Optimizer(g), horz_length(10), knot_length(1)
     {
+    }
+
+    void ModelPredictiveControl::setInitialConditions(MatrixXd x0)
+    {
+        xinit = x0;
+        return;
     }
 
     MatrixXd ModelPredictiveControl::statePrediction(MatrixXd x0, MatrixXd ulist)
     {
+        // Initialize state prediction list.
+        const int N(xinit.rows());
+        MatrixXd xlist(N,horz_length);
 
+        // Simulate over horizon using plant class.
+        xlist.col(0) = x0;
+        for (int i(0); i < horz_length-1; ++i) {
+            xlist.col(i+1) = prop( xlist.col(i), ulist.col(i) );
+        }
+
+        // Return prediction list.
+        return xlist;
     }
 
     MatrixXd ModelPredictiveControl::costPrediction(MatrixXd ulist)
@@ -22,8 +39,9 @@ namespace nap
         x = statePrediction(xinit, ulist);
 
         // Calculate cost at each horizon window.
-        MatrixXd g(1,1) = 0;
+        MatrixXd g(1,1); g(0,0) = 0;
         for (int i(0); i < horz_length; ++i) {
+            cout << g << ' ' << cost( x.col(i) ) << endl;
             g += cost( x.col(i) );
         }
 
