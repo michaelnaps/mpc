@@ -3,25 +3,28 @@
 
 namespace nap
 {
-    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd)) : Plant(f), Optimizer(g), horz_length(10), knot_length(1) {}
+    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd)) : Plant(f), Optimizer(costHorizon), horz_length(10), knot_length(1)
+    {
+        costWindow = g;
+    }
 
-    void ModelPredictiveControl::setInitialConditions(MatrixXd x0)
+    void ModelPredictiveControl::setInitialConditions(MatrixXd xinit)
     {
         // Set initial conditions.
-        xinit = x0;
+        init_cond = xinit;
 
         // Return nothing.
         return;
     }
 
-    MatrixXd ModelPredictiveControl::statePrediction(MatrixXd x0, MatrixXd ulist)
+    MatrixXd ModelPredictiveControl::statePrediction(MatrixXd xinit, MatrixXd ulist)
     {
         // Initialize state prediction list.
-        const int N(xinit.rows());
+        const int N(init_cond.rows());
         MatrixXd xlist(N,horz_length);
 
         // Simulate over horizon using plant class.
-        xlist.col(0) = x0;
+        xlist.col(0) = xinit;
         for (int i(0); i < horz_length-1; ++i) {
             xlist.col(i+1) = prop( xlist.col(i), ulist.col(i) );
         }
@@ -30,34 +33,48 @@ namespace nap
         return xlist;
     }
 
-    MatrixXd ModelPredictiveControl::costPrediction(MatrixXd ulist)
+    MatrixXd ModelPredictiveControl::costHorizon(MatrixXd ulist)
     {
         // Dimensions of prediction horizon.
-        const int N(xinit.rows());
+        const int N(init_cond.rows());
         MatrixXd x(N,horz_length);
 
         // Simulate over prediction horizon.
-        x = statePrediction(xinit, ulist);
+        x = statePrediction( init_cond, ulist );
 
         // Calculate cost at each horizon window.
         MatrixXd g(1,1); g(0,0) = 0;
         for (int i(0); i < horz_length; ++i) {
-            cout << "---" << endl;
-            cout << x.col(i).transpose() << endl;
-            cout << g << ' ' << cost( x.col(i) ) << endl;
-            g += cost( x.col(i) );
+            // cout << x.col(i).transpose() << endl;
+            g += costWindow( x.col(i) );
         }
 
         // Return predicted cost.
         return g;
     }
 
-    MatrixXd ModelPredictiveControl::costPrediction(MatrixXd x0, MatrixXd ulist)
+    MatrixXd ModelPredictiveControl::costPrediction(MatrixXd xinit, MatrixXd ulist)
     {
         // Set initial conditions.
-        setInitialConditions( x0 );
+        setInitialConditions( xinit );
 
         // Calculate and return cost of horizon.
-        return costPrediction( ulist );
+        return costHorizon( ulist );
+    }
+
+    MatrixXd ModelPredictiveControl::solveMPC(MatrixXd xinit, MatrixXd ulist)
+    {
+        // Get dimensions of optimization problem.
+        const int N(xinit.rows()), M(ulist.rows());
+
+        // Set initial conditions.
+        setInitialConditions( xinit );
+
+        // Vectorize list of control inputs.
+        MatrixXd uvect(N*M,1);  uvect = ulist.reshaped(N*M,1);
+
+        // // Solve optimization problem from initial guess.
+        // ufinal = solve()
+        return uvect;
     }
 }

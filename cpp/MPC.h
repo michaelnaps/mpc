@@ -13,12 +13,15 @@ namespace nap {
         // VARIABLES:
         int horz_length;
         int knot_length;
-        MatrixXd xinit;
+        MatrixXd init_cond;
 
     protected:
+        // VARIABLES:
+        MatrixXd (*costWindow)(MatrixXd);
+
         // PROTECTED MEMBER FUNCTIONS:
-        void setInitialConditions(MatrixXd x0);
-        MatrixXd costPrediction(MatrixXd ulist);
+        void setInitialConditions(MatrixXd xinit);
+        MatrixXd costHorizon(MatrixXd ulist);
 
     public:
         // CONSTRUCTORS:
@@ -30,9 +33,9 @@ namespace nap {
         void setKnotLength(const int &k);
 
         // MEMBER FUNCTIONS:
-        MatrixXd statePrediction(MatrixXd x0, MatrixXd ulist);
-        MatrixXd costPrediction(MatrixXd x0, MatrixXd ulist);
-        MatrixXd solve(MatrixXd x0, MatrixXd uinit);
+        MatrixXd statePrediction(MatrixXd xinit, MatrixXd ulist);
+        MatrixXd costPrediction(MatrixXd xinit, MatrixXd ulist);
+        MatrixXd solveMPC(MatrixXd xinit, MatrixXd uinit);
     };
 
 }
