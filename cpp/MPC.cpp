@@ -3,15 +3,25 @@
 
 namespace nap
 {
-    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*g)(const MatrixXd &)) : mvar(f), cost(g) {}
+    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*g)(const MatrixXd &)):
+    mvar(f), cost(g) {}
+
+    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*g)(const MatrixXd &), const int &P, const int &k):
+    mvar(f), cost(g), horz_length(P), knot_length(k) {}
+
+    void ModelPredictiveControl::setHorizonLength(const int &P)
+    {
+        horz_length = P;
+    }
+
+    void ModelPredictiveControl::setKnotLength(const int &k)
+    {
+        knot_length = k;
+    }
 
     void ModelPredictiveControl::setInitialConditions(const MatrixXd &xinit)
     {
-        // Set initial conditions.
         init_cond = xinit;
-
-        // Return nothing.
-        return;
     }
 
     MatrixXd ModelPredictiveControl::statePrediction(const MatrixXd &xinit, const MatrixXd &ulist)
