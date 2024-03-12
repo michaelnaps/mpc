@@ -15,18 +15,18 @@ namespace nap {
 
     public:
         // VARIABLES:
-        MatrixXd (*cost)(MatrixXd);
+        MatrixXd (*cost)(const MatrixXd &);
 
         // CONSTRUCTORS:
-        Cost(MatrixXd (*g)(MatrixXd));
-        Cost(MatrixXd (*g)(MatrixXd), const double& h);
+        Cost(MatrixXd (*g)(const MatrixXd &));
+        Cost(MatrixXd (*g)(const MatrixXd &), const double& h);
 
         // SET METHODS:
         void setStepSize(const double &h);
 
         // MEMBER FUNCTIONS:
-        MatrixXd gradient(MatrixXd x);
-        MatrixXd hessian(MatrixXd x);
+        MatrixXd gradient(const MatrixXd &x);
+        MatrixXd hessian(const MatrixXd &x);
     };
 
     class Optimizer : public Cost {
@@ -39,18 +39,18 @@ namespace nap {
 
     public:
         // CONSTRUCTORS:
-        Optimizer(MatrixXd (*g)(MatrixXd));
-        Optimizer(MatrixXd (*g)(MatrixXd), const int &n, const double &e, const double &a, const string &type);
+        Optimizer(MatrixXd (*g)(const MatrixXd &));
+        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type);
 
         // SET METHODS:
         void setStepSize(const double &a);
         void setMaxIter(const int &n);
-        void setObjectiveFunction(MatrixXd (*g)(MatrixXd, MatrixXd));
+        void setObjectiveFunction(MatrixXd (*g)(const MatrixXd &, const MatrixXd &));
         void setStepMethod(const string &type);
 
         // MEMBER FUNCTIONS:
-        MatrixXd step(MatrixXd x, MatrixXd dg);
-        MatrixXd solve(MatrixXd x0);
+        MatrixXd step(const MatrixXd &x, const MatrixXd &dg);
+        MatrixXd solve(const MatrixXd &xinit);
     };
 }
 

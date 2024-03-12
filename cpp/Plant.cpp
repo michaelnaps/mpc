@@ -3,7 +3,7 @@
 
 namespace nap {
 // HELPER FUNCTIONS:
-    MatrixXd TaylorMethod(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt)
+    MatrixXd TaylorMethod(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), const MatrixXd &x, const MatrixXd &u, const double &dt)
     {
         return x + dt*f( x, u );
     }
@@ -14,7 +14,7 @@ namespace nap {
     // Default variables:
     //      time_step = 1e-3
     //      model_type = "discrete"
-    Plant::Plant(MatrixXd (*f)(MatrixXd, MatrixXd)) : prop(f), model_type("discrete"), time_step(1e-3)
+    Plant::Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &)) : prop(f), model_type("discrete"), time_step(1e-3)
     {
         model = f;
         prop = model;
@@ -24,7 +24,7 @@ namespace nap {
     //      f: Model function.
     //      model_type: Either continuous or discrete.
     //      time_step: Length of time-step.
-    Plant::Plant(MatrixXd (*f)(MatrixXd, MatrixXd), const std::string &type, const double &dt) : prop(f)
+    Plant::Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), const std::string &type, const double &dt) : prop(f)
     {
         model = f;
         model_type = type;
@@ -53,8 +53,8 @@ namespace nap {
     //      x: State of plant at time, t.
     //      u: User-input (control term).
     // Output(s): Next step of plant simulation.
-    MatrixXd Plant::cprop(MatrixXd x, MatrixXd u)
+    MatrixXd Plant::cprop(const MatrixXd &x, const MatrixXd &u)
     {
-        return TaylorMethod( model, x, u, time_step );
+        return TaylorMethod(model, x, u, time_step);
     }
 }

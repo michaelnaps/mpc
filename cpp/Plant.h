@@ -20,25 +20,25 @@ namespace nap {
 
     protected:
         //VARIABLES:
-        MatrixXd (*model)(MatrixXd, MatrixXd);
+        MatrixXd (*model)(const MatrixXd &, const MatrixXd &);
 
         // PRIVATE MEMBER FUNCTIONS:
-        MatrixXd templateModel(MatrixXd x, MatrixXd u);
+        MatrixXd templateModel(const MatrixXd &x, const MatrixXd &u);
 
     public:
         // VARIABLES:
-        MatrixXd (*prop)(MatrixXd, MatrixXd);
+        MatrixXd (*prop)(const MatrixXd &, const MatrixXd &);
 
         // CONSTRUCTORS:
-        Plant(MatrixXd (*f)(MatrixXd, MatrixXd));
-        Plant(MatrixXd (*f)(MatrixXd, MatrixXd), const std::string &type, const double &dt);
+        Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &));
+        Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), const std::string &type, const double &dt);
 
         // ACCESSOR FUNCTIONS:
         std::string getModelType();
         double getTimeStep();
 
         // MEMBER FUNCTIONS:
-        MatrixXd cprop(MatrixXd x, MatrixXd u);
+        MatrixXd cprop(const MatrixXd &x, const MatrixXd &u);
     };
 }
 

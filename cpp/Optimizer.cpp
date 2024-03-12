@@ -23,7 +23,7 @@ namespace nap
     //     return fdm2c(gradient, x, step_size);
     // }
 
-    MatrixXd fdm2c(MatrixXd (*obj)(MatrixXd), MatrixXd x, const double &h)
+    MatrixXd fdm2c(MatrixXd (*obj)(const MatrixXd &), const MatrixXd &x, const double &h)
     {
         // State and cost dimensions.
         const int N = x.rows();
@@ -48,26 +48,26 @@ namespace nap
     }
 
 // Class: Cost()
-    Cost::Cost(MatrixXd (*g)(MatrixXd)) : step_size(1e-6)
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &)) : step_size(1e-6)
     {
         cost = g;
     }
 
-    Cost::Cost(MatrixXd (*g)(MatrixXd), const double &h)
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const double &h)
     {
         cost = g;
         step_size = h;
     }
 
-    MatrixXd Cost::gradient(MatrixXd x)
+    MatrixXd Cost::gradient(const MatrixXd &x)
     {
         return fdm2c(cost, x, step_size);
     }
 
 // Class: Optimizer()
-    Optimizer::Optimizer(MatrixXd (*g)(MatrixXd)) : Cost(g), max_iter(1000), epsilon(1e-3), alpha(0.1), method("ngd") {}
+    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &)) : Cost(g), max_iter(1000), epsilon(1e-3), alpha(0.1), method("ngd") {}
 
-    Optimizer::Optimizer(MatrixXd (*g)(MatrixXd), const int &n, const double &e, const double &a, const string &type) : Cost(g)
+    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type) : Cost(g)
     {
         max_iter = n;
         epsilon = e;
@@ -75,13 +75,13 @@ namespace nap
         method = type;
     }
 
-    MatrixXd Optimizer::step(MatrixXd x, MatrixXd dg)
+    MatrixXd Optimizer::step(const MatrixXd &x, const MatrixXd &dg)
     {
         // TODO: Alternative step methods.
         return x - alpha*dg;  // Nonlinear gradient descent (ngd).
     }
 
-    MatrixXd Optimizer::solve(MatrixXd x0)
+    MatrixXd Optimizer::solve(const MatrixXd &x0)
     {
         // Objective dimensions.
         const int N = x0.rows();
