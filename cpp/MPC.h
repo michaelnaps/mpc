@@ -7,17 +7,21 @@
 
 namespace nap {
 
-    class ModelPredictiveControl : public Plant, public Optimizer
+    class ModelPredictiveControl
     {
     private:
-        // VARIABLES:
-        int horz_length;
-        int knot_length;
+        // DEFAULT VARIABLES/CONSTANTS:
+        const double TOL = 1e-12;
+        int horz_length = 10;
+        int knot_length = 1;
+
+        // FREE VARIABLES:
+        Plant mvar;
         MatrixXd init_cond;
 
     protected:
         // VARIABLES:
-        MatrixXd (*costWindow)(MatrixXd);
+        MatrixXd (*cost)(MatrixXd);
 
         // PROTECTED MEMBER FUNCTIONS:
         void setInitialConditions(MatrixXd xinit);
@@ -35,7 +39,7 @@ namespace nap {
         // MEMBER FUNCTIONS:
         MatrixXd statePrediction(MatrixXd xinit, MatrixXd ulist);
         MatrixXd costPrediction(MatrixXd xinit, MatrixXd ulist);
-        MatrixXd solveMPC(MatrixXd xinit, MatrixXd uinit);
+        MatrixXd solve(MatrixXd xinit, MatrixXd uinit);
     };
 
 }

@@ -20,5 +20,5 @@ int main()
     nap::ModelPredictiveControl mpcvar( model, cost );
     MatrixXd x( 3, 1 );  x << 100, 55, 243;
     MatrixXd uinit( 3,10 );  uinit << Eigen::ArrayXXd::Zero(3,10);
-    cout << mpcvar.costPrediction( x, uinit ) << endl;
+    cout << mpcvar.solve( x, uinit ) << endl;
 }

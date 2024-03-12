@@ -65,9 +65,7 @@ namespace nap
     }
 
 // Class: Optimizer()
-    Optimizer::Optimizer(MatrixXd (*g)(MatrixXd)) : Cost(g), max_iter(1000), epsilon(1e-3), alpha(0.1), method("ngd")
-    {
-    }
+    Optimizer::Optimizer(MatrixXd (*g)(MatrixXd)) : Cost(g), max_iter(1000), epsilon(1e-3), alpha(0.1), method("ngd") {}
 
     Optimizer::Optimizer(MatrixXd (*g)(MatrixXd), const int &n, const double &e, const double &a, const string &type) : Cost(g)
     {
