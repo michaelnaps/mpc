@@ -3,9 +3,9 @@
 
 namespace nap
 {
-    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd)) : mvar(f), cost(g) {}
+    ModelPredictiveControl::ModelPredictiveControl(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*g)(const MatrixXd &)) : mvar(f), cost(g) {}
 
-    void ModelPredictiveControl::setInitialConditions(MatrixXd xinit)
+    void ModelPredictiveControl::setInitialConditions(const MatrixXd &xinit)
     {
         // Set initial conditions.
         init_cond = xinit;
@@ -14,7 +14,7 @@ namespace nap
         return;
     }
 
-    MatrixXd ModelPredictiveControl::statePrediction(MatrixXd xinit, MatrixXd ulist)
+    MatrixXd ModelPredictiveControl::statePrediction(const MatrixXd &xinit, const MatrixXd &ulist)
     {
         // Initialize state prediction list.
         const int N = init_cond.rows();
@@ -30,16 +30,9 @@ namespace nap
         return xlist;
     }
 
-    MatrixXd ModelPredictiveControl::costHorizon(MatrixXd ulist)
+    MatrixXd ModelPredictiveControl::costHorizon(const MatrixXd &ulist)
     {
-        // Check dimensions of ulist: if vector, reshape properly.
-        int M = ulist.rows(), P = ulist.cols();
-        if ((double) P/horz_length - 1. < TOL) {
-            M = round((double) M/horz_length);
-            ulist = ulist.reshaped(M,horz_length).eval();
-        }
-
-        // Dimensions of prediction horizon.
+        // Dimensions of state space.
         const int N = init_cond.rows();
 
         // Simulate over horizon.
@@ -56,7 +49,7 @@ namespace nap
         return g;
     }
 
-    MatrixXd ModelPredictiveControl::costPrediction(MatrixXd xinit, MatrixXd ulist)
+    MatrixXd ModelPredictiveControl::costPrediction(const MatrixXd &xinit, const MatrixXd &ulist)
     {
         // Set initial conditions.
         setInitialConditions(xinit);
@@ -65,13 +58,13 @@ namespace nap
         return costHorizon(ulist);
     }
 
-    MatrixXd ModelPredictiveControl::solve(MatrixXd xinit, MatrixXd uinit)
+    MatrixXd ModelPredictiveControl::solve(const MatrixXd &xinit, const MatrixXd &uinit)
     {
         // Get dimensions of optimization problem.
         const int N = xinit.rows(), M = uinit.rows();
 
         // Set initial conditions.
-        this->setInitialConditions(xinit);
+        setInitialConditions(xinit);
 
         // Vectorize list of control inputs.
         MatrixXd uvect(N*M,1);  uvect = uinit.reshaped(N*M,1);

@@ -21,25 +21,25 @@ namespace nap {
 
     protected:
         // VARIABLES:
-        MatrixXd (*cost)(MatrixXd);
+        MatrixXd (*cost)(const MatrixXd &);
 
         // PROTECTED MEMBER FUNCTIONS:
-        void setInitialConditions(MatrixXd xinit);
-        MatrixXd costHorizon(MatrixXd ulist);
+        void setInitialConditions(const MatrixXd &xinit);
+        MatrixXd costHorizon(const MatrixXd &ulist);
 
     public:
         // CONSTRUCTORS:
-        ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd));
-        ModelPredictiveControl(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd (*g)(MatrixXd), const int &P, const int &k);
+        ModelPredictiveControl(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*g)(const MatrixXd &));
+        ModelPredictiveControl(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*g)(const MatrixXd &), const int &P, const int &k);
 
         // SET MEMBERS:
         void setHorizonLength(const int &P);
         void setKnotLength(const int &k);
 
         // MEMBER FUNCTIONS:
-        MatrixXd statePrediction(MatrixXd xinit, MatrixXd ulist);
-        MatrixXd costPrediction(MatrixXd xinit, MatrixXd ulist);
-        MatrixXd solve(MatrixXd xinit, MatrixXd uinit);
+        MatrixXd statePrediction(const MatrixXd &xinit, const MatrixXd &ulist);
+        MatrixXd costPrediction(const MatrixXd &xinit, const MatrixXd &ulist);
+        MatrixXd solve(const MatrixXd &xinit, const MatrixXd &uinit);
     };
 
 }

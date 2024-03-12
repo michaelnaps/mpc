@@ -1,6 +1,5 @@
 
-#include "Plant.cpp"
-#include "Optimizer.cpp"
+#include "MPC.cpp"
 
 MatrixXd cost(const MatrixXd &x)
 {
