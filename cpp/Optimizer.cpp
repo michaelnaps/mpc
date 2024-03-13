@@ -3,26 +3,6 @@
 
 namespace nap
 {
-    // HELPER FUNCTIONS:
-    // // TODO: This is a mess.
-    // MatrixXd offset(MatrixXd x, const double &h)
-    // {
-    //     const int N(x.rows()), M(x.cols());
-    //     MatrixXd y(N,M);
-    //     for (int i(0); i < N; ++i) {
-    //         for (int j(0); j < M; ++j) {
-    //             y(i,j) = x(i,j) + h;
-    //         }
-    //     }
-    //     return y;
-    // }
-
-    // // TODO: Resolve non-static function error message.
-    // MatrixXd Cost::hessian(MatrixXd x)
-    // {
-    //     return fdm2c(gradient, x, step_size);
-    // }
-
     MatrixXd fdm2c(MatrixXd (*obj)(const MatrixXd &), const MatrixXd &x, const double &h)
     {
         // State and cost dimensions.
@@ -67,13 +47,13 @@ namespace nap
 // Class: Optimizer()
     Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &)) : Cost(g), max_iter(1000), epsilon(1e-3), alpha(0.1), method("ngd") {}
 
-    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type) : Cost(g)
-    {
-        max_iter = n;
-        epsilon = e;
-        alpha = a;
-        method = type;
-    }
+    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n) : Cost(g), max_iter(n), epsilon(1e-3), alpha(0.1), method("ngd") {}
+
+    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e) : Cost(g), max_iter(n), epsilon(e), alpha(0.1), method("ngd") {}
+
+    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a) : Cost(g), max_iter(n), epsilon(e), alpha(a), method("ngd") {}
+
+    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type) : Cost(g), max_iter(n), epsilon(e), alpha(a), method(type) {}
 
     MatrixXd Optimizer::step(const MatrixXd &x, const MatrixXd &dg)
     {
@@ -105,6 +85,5 @@ namespace nap
 
         // Return solution.
         return x;
-
     }
 }

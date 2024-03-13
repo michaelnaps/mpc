@@ -40,6 +40,9 @@ namespace nap {
     public:
         // CONSTRUCTORS:
         Optimizer(MatrixXd (*g)(const MatrixXd &));
+        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n);
+        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e);
+        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a);
         Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type);
 
         // SET METHODS:
