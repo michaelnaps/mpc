@@ -28,14 +28,12 @@ namespace nap
     }
 
 // Class: Cost()
-    Cost::Cost(MatrixXd (*g)(const MatrixXd &)) : step_size(1e-6)
-    {
-        cost = g;
-    }
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &)) : cost(g), step_size(1e-6) {}
 
-    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const double &h)
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const double &h) : cost(g), step_size(h) {}
+
+    void Cost::setStepSize(const double &h)
     {
-        cost = g;
         step_size = h;
     }
 
