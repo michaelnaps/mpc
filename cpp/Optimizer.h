@@ -46,9 +46,10 @@ namespace nap {
         Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type);
 
         // SET METHODS:
-        void setStepSize(const double &a);
-        void setMaxIter(const int &n);
         void setObjectiveFunction(MatrixXd (*g)(const MatrixXd &, const MatrixXd &));
+        void setMaxIter(const int &n);
+        void setTolerance(const double &e);
+        void setStepSize(const double &a);
         void setStepMethod(const string &type);
 
         // MEMBER FUNCTIONS:
