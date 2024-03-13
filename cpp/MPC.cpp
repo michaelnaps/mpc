@@ -80,10 +80,11 @@ namespace nap
         MatrixXd uvect(N*M,1);  uvect = uinit.reshaped(N*M,1);
 
         // Solve optimization problem from initial guess.
-        Optimizer ovar(costHorizon);
-        MatrixXd ufinal(N*M,1);  ufinal = ovar.solve(uvect);
+        // Optimizer ovar(costHorizon);
+        // MatrixXd ufinal(N*M,1);  ufinal = ovar.solve(uvect);
 
         // Return solution after reshape.
-        return ufinal.reshaped(M,horz_length).eval();
+        // return ufinal.reshaped(M,horz_length).eval();
+        return uvect;
     }
 }
