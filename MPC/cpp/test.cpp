@@ -1,6 +1,6 @@
 
 #include "Plant.cpp"
-// #include "Optimizer.cpp"
+#include "Optimizer.cpp"
 using namespace std;
 
 MatrixXd model(const MatrixXd &x, const MatrixXd &u)
@@ -23,9 +23,8 @@ int main()
     MatrixXd x( 3, 1 );  x << 100, 55, 243;
     cout << x.transpose() << " -> " << mvar.prop( x, x ).transpose() << endl;
 
-    // nap::Optimizer ovar( cost, 1000, 1e-12, 0.1, "discrete" );
-    // cout << x.transpose() << '\n' << mvar.prop( x, x ).transpose() << endl;
-    // cout << ovar.solve( x ).transpose() << endl;
+    nap::Cost cvar( cost );
+    cout << cvar.solve( x ).transpose() << endl;
     // MatrixXd uinit( 3,10 );  uinit << Eigen::ArrayXXd::Zero(3,10);
     // cout << mpcvar.solve( x, uinit ) << endl;
 }

@@ -28,60 +28,52 @@ namespace nap
     }
 
 // Class: Cost()
-    Cost::Cost(MatrixXd (*g)(const MatrixXd &)) : cost(g), step_size(1e-6) {}
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &)):
+        Cost(g, 1000) {}
 
-    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const double &h) : cost(g), step_size(h) {}
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const int &n):
+        Cost(g, n, 0.1) {}
 
-    void Cost::setStepSize(const double &h)
-    {
-        step_size = h;
-    }
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const int &n, const double &a):
+        Cost(g, n, a, 1e-6) {}
+
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const int &n, const double &a, const double &h):
+        Cost(g, n, a, h, 1e-6) {}
+
+    Cost::Cost(MatrixXd (*g)(const MatrixXd &), const int &n, const double &a, const double &h, const double &e):
+        cost(g), max_iter(n), alpha(a), step_size(h), epsilon(e) {}
 
     MatrixXd Cost::gradient(const MatrixXd &x)
     {
         return fdm2c(cost, x, step_size);
     }
 
-// Class: Optimizer()
-    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &)) : Cost(g), max_iter(1000), epsilon(1e-3), alpha(0.1), method("ngd") {}
-
-    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n) : Cost(g), max_iter(n), epsilon(1e-3), alpha(0.1), method("ngd") {}
-
-    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e) : Cost(g), max_iter(n), epsilon(e), alpha(0.1), method("ngd") {}
-
-    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a) : Cost(g), max_iter(n), epsilon(e), alpha(a), method("ngd") {}
-
-    Optimizer::Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type) : Cost(g), max_iter(n), epsilon(e), alpha(a), method(type) {}
-
-    MatrixXd Optimizer::step(const MatrixXd &x, const MatrixXd &dg)
+    MatrixXd Cost::step(const MatrixXd &x, const MatrixXd &dg)
     {
-        // TODO: Alternative step methods.
-        return x - alpha*dg;  // Nonlinear gradient descent (ngd).
+        return x - alpha*dg;
     }
 
-    MatrixXd Optimizer::solve(const MatrixXd &x0)
+    MatrixXd Cost::solve(const MatrixXd &xinit)
     {
-        // Objective dimensions.
-        const int N = x0.rows();
-        MatrixXd x(N,1);  x = x0;
-        MatrixXd dg(N,1);  dg = gradient( x );
+        // Initialize iteration variable at x0.
+        MatrixXd x = xinit;
+        MatrixXd dg = gradient( x );
 
         // Optimization loop.
         int n = 0;
-        while (dg.norm() > epsilon) {
-            // Calculate new state and gradient.
+        while (dg.norm() > epsilon)
+        {
             x = step( x, dg );
             dg = gradient( x );
 
-            // If maximum number of iterations reached.
+            n += 1;
             if (n == max_iter) {
-                cout << "Iteration break." << endl;
+                std::cout << "WARNING: Iteration break executed." << std::endl;
                 break;
             }
-            n += 1;
         }
 
-        // Return solution.
+        // Return minimum of cost function.
         return x;
     }
 }

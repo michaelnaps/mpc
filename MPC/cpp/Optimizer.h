@@ -11,7 +11,10 @@ namespace nap {
     class Cost {
     private:
         // VARIABLES:
+        int max_iter;
+        double alpha;
         double step_size;
+        double epsilon;
 
     public:
         // VARIABLES:
@@ -19,43 +22,28 @@ namespace nap {
 
         // CONSTRUCTORS:
         Cost(MatrixXd (*g)(const MatrixXd &));
-        Cost(MatrixXd (*g)(const MatrixXd &), const double& h);
+        Cost(MatrixXd (*g)(const MatrixXd &), const int &n);
+        Cost(MatrixXd (*g)(const MatrixXd &), const int &n, const double &a);
+        Cost(MatrixXd (*g)(const MatrixXd &), const int &n, const double &a, const double &h);
+        Cost(MatrixXd (*g)(const MatrixXd &), const int &n, const double &a, const double &h, const double &e);
 
-        // SET METHODS:
-        void setStepSize(const double &h);
+        // TODO: SET METHODS:
 
         // MEMBER FUNCTIONS:
         MatrixXd gradient(const MatrixXd &x);
-        MatrixXd hessian(const MatrixXd &x);
-    };
-
-    class Optimizer : public Cost {
-    private:
-        // VARIABLES:
-        int max_iter;
-        double epsilon;
-        double alpha;
-        string method;
-
-    public:
-        // CONSTRUCTORS:
-        Optimizer(MatrixXd (*g)(const MatrixXd &));
-        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n);
-        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e);
-        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a);
-        Optimizer(MatrixXd (*g)(const MatrixXd &), const int &n, const double &e, const double &a, const string &type);
-
-        // SET METHODS:
-        void setObjectiveFunction(MatrixXd (*g)(const MatrixXd &, const MatrixXd &));
-        void setMaxIter(const int &n);
-        void setTolerance(const double &e);
-        void setStepSize(const double &a);
-        void setStepMethod(const string &type);
-
-        // MEMBER FUNCTIONS:
+        // TODO: MatrixXd hessian(const MatrixXd &x);
         MatrixXd step(const MatrixXd &x, const MatrixXd &dg);
         MatrixXd solve(const MatrixXd &xinit);
     };
+
+    // class HorizonCost: public Plant, public Cost
+    // {
+    // private:
+    //     // VARIABLES:
+
+    // protected:
+    // public:
+    // }
 }
 
 #endif
