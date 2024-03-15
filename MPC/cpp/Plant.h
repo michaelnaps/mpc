@@ -3,7 +3,6 @@
 #include <Eigen/Dense>
 
 using Eigen::MatrixXd;
-using namespace std;
 
 #ifndef MPC_PLANT
 #define MPC_PLANT
@@ -15,20 +14,15 @@ namespace nap {
     {
     private:
         // VARIABLES:
-        std::string model_type;
         double time_step;
+        std::string model_type;
+        char mt;
 
     protected:
-        //VARIABLES:
+        // PUBLIC VARIABLES:
         MatrixXd (*model)(const MatrixXd &, const MatrixXd &);
 
-        // PRIVATE MEMBER FUNCTIONS:
-        MatrixXd templateModel(const MatrixXd &x, const MatrixXd &u);
-
     public:
-        // VARIABLES:
-        MatrixXd (*prop)(const MatrixXd &, const MatrixXd &);
-
         // CONSTRUCTORS:
         Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &));
         Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), const std::string &type, const double &dt);
@@ -38,7 +32,7 @@ namespace nap {
         double getTimeStep();
 
         // MEMBER FUNCTIONS:
-        MatrixXd cprop(const MatrixXd &x, const MatrixXd &u);
+        MatrixXd prop(const MatrixXd &x, const MatrixXd &u);
     };
 }
 
