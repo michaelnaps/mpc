@@ -76,4 +76,30 @@ namespace nap
         // Return minimum of cost function.
         return x;
     }
+
+// Class: ModelCost()
+    ModelCost::ModelCost(const Cost &gx, const Cost &gu):
+        costx(gx), costu(gu) {}
+    ModelCost::ModelCost(MatrixXd (*gx)(const MatrixXd &), MatrixXd (*gu)(const MatrixXd &)):
+        costx(gx), costu(gu) {}
+
+    MatrixXd ModelCost::cost(const MatrixXd &x, const MatrixXd &u)
+    {
+        return costx.cost(x) + costu.cost(u);
+    }
+
+    MatrixXd ModelCost::xgradient(const MatrixXd &x)
+    {
+        return fdm2c(costx.cost, x, costx.step_size);
+    }
+
+    MatrixXd ModelCost::ugradient(const MatrixXd &u)
+    {
+        return fdm2c(costu.cost, u, costu.step_size);
+    }
+
+    MatrixXd ModelCost::gradient(const MatrixXd &x, const MatrixXd &u)
+    {
+        return xgradient( x ) + ugradient( u )
+    }
 }

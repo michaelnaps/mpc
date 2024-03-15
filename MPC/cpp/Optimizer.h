@@ -9,14 +9,13 @@ using namespace std;
 
 namespace nap {
     class Cost {
-    private:
+    public:
         // VARIABLES:
         int max_iter;
         double alpha;
         double step_size;
         double epsilon;
 
-    public:
         // VARIABLES:
         MatrixXd (*cost)(const MatrixXd &);
 
@@ -36,14 +35,27 @@ namespace nap {
         MatrixXd solve(const MatrixXd &xinit);
     };
 
-    // class HorizonCost: public Plant, public Cost
-    // {
-    // private:
-    //     // VARIABLES:
+    class ModelCost
+    {
+    private:
+        // VARIABLES:
 
-    // protected:
-    // public:
-    // }
+    protected:
+        // PROTECTED VARIABLES:
+        Cost costx;
+        Cost costu;
+
+    public:
+        // CONSTRUCTORS:
+        ModelCost(const Cost &gx, const Cost &gu);
+        ModelCost(MatrixXd (*gx)(const MatrixXd &), MatrixXd (*gu)(const MatrixXd &));
+
+        // MEMBER FUNCTIONS:
+        MatrixXd cost(const MatrixXd &x, const MatrixXd &u);
+        MatrixXd xgradient(const MatrixXd &u);
+        MatrixXd ugradient(const MatrixXd &x);
+        MatrixXd gradient(const MatrixXd &x, const MatrixXd &u);
+    };
 }
 
 #endif
