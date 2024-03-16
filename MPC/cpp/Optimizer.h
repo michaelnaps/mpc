@@ -52,8 +52,8 @@ namespace nap {
 
         // MEMBER FUNCTIONS:
         MatrixXd cost(const MatrixXd &x, const MatrixXd &u);
-        MatrixXd xgradient(const MatrixXd &u);
-        MatrixXd ugradient(const MatrixXd &x);
+        MatrixXd xgradient(const MatrixXd &x);
+        MatrixXd ugradient(const MatrixXd &u);
         MatrixXd gradient(const MatrixXd &x, const MatrixXd &u);
     };
 }

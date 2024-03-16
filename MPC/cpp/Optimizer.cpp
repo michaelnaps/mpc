@@ -27,6 +27,11 @@ namespace nap
         return g;
     }
 
+    MatrixXd minimum(MatrixXd (*dg)(const MatrixXd &), const MatrixXd &xinit)
+    {
+        return xinit;
+    }
+
 // Class: Cost()
     Cost::Cost(MatrixXd (*g)(const MatrixXd &)):
         Cost(g, 1000) {}
@@ -45,7 +50,7 @@ namespace nap
 
     MatrixXd Cost::gradient(const MatrixXd &x)
     {
-        return fdm2c(cost, x, step_size);
+        return fdm2c( cost, x, step_size );
     }
 
     MatrixXd Cost::step(const MatrixXd &x, const MatrixXd &dg)
