@@ -8,8 +8,6 @@ using Eigen::MatrixXd;
 #define MPC_PLANT
 
 namespace nap {
-    MatrixXd TaylorMethod(MatrixXd (*f)(MatrixXd, MatrixXd), MatrixXd x, MatrixXd u, double dt);
-
     class Plant
     {
     private:

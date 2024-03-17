@@ -115,7 +115,7 @@ namespace nap
         horz_length(P),
         knot_length(k) {}
 
-    MatrixXd statePrediction(const MatrixXd &xinit, const MatrixXd &ulist)
+    MatrixXd PredicticeCost::statePrediction(const MatrixXd &xinit, const MatrixXd &ulist)
     {
         // Dimensions of simulation.
         const int N = xinit.rows();
