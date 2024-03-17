@@ -81,6 +81,7 @@ namespace nap
         return xgradient( x ) + ugradient( u );
     }
 
+// Class: PredictiveCost()
     PredictiveCost::PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu):
         PredictiveCost(f, gx, gu, 10, 1) {}
 
@@ -100,19 +101,45 @@ namespace nap
         // Check that ulist is properly dimensioned.
         if (ulist.cols() != horz_length) {
             std::cout << "ERROR: 'ulist' is not properly dimensioned." << std::endl;
-            return MatrixXd::Zero(N, horz_length);
+            return MatrixXd::Zero(N, horz_length+1);
         }
 
         // Simulation set and initial conditions.
-        MatrixXd xlist(N,horz_length);
+        MatrixXd xlist(N,horz_length+1);
         xlist.col(0) = xinit;
 
         // Simulation loop.
-        for (int i(0); i < horz_length-1; ++i) {
+        for (int i(0); i < horz_length; ++i) {
             xlist.col(i+1) = mvar.prop(xlist.col(i), ulist.col(i));
         }
 
         // Return simulation set.
         return xlist;
+    }
+
+    MatrixXd PredictiveCost::costPrediction(const MatrixXd &xinit, const MatrixXd &ulist)
+    {
+        // Check that ulist is properly dimensioned.
+        MatrixXd C(1,1);  C << -1;
+        if (ulist.cols() != horz_length) {
+            std::cout << "ERROR: 'ulist' is not properly dimensioned." << std::endl;
+            return C;
+        }
+
+        // Get dimension and simulation set.
+        const int N = xinit.rows();
+        MatrixXd xlist = statePrediction(xinit, ulist);
+
+        // Iterate through list summing cost.
+        C << 0;
+        for (int i(0); i < horz_length; ++i) {
+            C += cost(xlist.col(i), ulist.col(i));
+        }
+
+        // Cost of final state (assumed zero input).
+        C += cost(xlist.col(horz_length), MatrixXd::Zero(N,1));
+
+        // Return cumulative cost.
+        return C;
     }
 }

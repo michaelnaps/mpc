@@ -9,7 +9,7 @@ MatrixXd model(const MatrixXd &x, const MatrixXd &u)
     M << 1, 1, 2,
          2, 1, 0,
          0.5, 1, 0;
-    return 0.1*M*x + 0.005*u;
+    return 0.1*M*x + 0.05*u;
 }
 
 MatrixXd cost(const MatrixXd &x)
@@ -26,5 +26,7 @@ int main()
     nap::Cost cvar( cost );
     cout << cvar.solve( x ).transpose() << endl;
 
-    nap::PredictiveCost pcvar( model, cost, cost );
+    MatrixXd ulist = MatrixXd::Random(3,10);
+    nap::PredictiveCost pcvar( model, cost, cost, 10 );
+    cout << pcvar.costPrediction(x, ulist) << endl;
 }
