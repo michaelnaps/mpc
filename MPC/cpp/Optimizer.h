@@ -1,8 +1,9 @@
 
 #include <iostream>
 #include <Eigen/Dense>
+#include "Plant.cpp"
+
 using Eigen::MatrixXd;
-using namespace std;
 
 #ifndef MPC_OPTIMIZER
 #define MPC_OPTIMIZER
@@ -42,13 +43,14 @@ namespace nap {
 
     protected:
         // PROTECTED VARIABLES:
+        Plant mvar;
         Cost costx;
         Cost costu;
 
     public:
         // CONSTRUCTORS:
-        ModelCost(const Cost &gx, const Cost &gu);
-        ModelCost(MatrixXd (*gx)(const MatrixXd &), MatrixXd (*gu)(const MatrixXd &));
+        ModelCost(const Plant &f, const Cost &gx, const Cost &gu);
+        ModelCost(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*gx)(const MatrixXd &), MatrixXd (*gu)(const MatrixXd &));
 
         // MEMBER FUNCTIONS:
         MatrixXd cost(const MatrixXd &x, const MatrixXd &u);
@@ -67,11 +69,13 @@ namespace nap {
     protected:
     public:
         // CONSTRUCTORS:
-        PredictiveCost(const Cost &gx, const Cost &gu);
-        PredictiveCost(const Cost &gx, const Cost &gu, const int &P);
-        PredictiveCost(const Cost &gx, const Cost &gu, const int &P, const int &k);
+        PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu);
+        PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu, const int &P);
+        PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu, const int &P, const int &k);
 
         // MEMBER FUNCTIONS:
+        MatrixXd statePrediction(const MatrixXd &xinit, const MatrixXd &ulist);
+        MatrixXd costPrediction(const MatrixXd &xinit, const MatrixXd &ulist);
     };
 }
 

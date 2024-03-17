@@ -78,10 +78,11 @@ namespace nap
     }
 
 // Class: ModelCost()
-    ModelCost::ModelCost(const Cost &gx, const Cost &gu):
-        costx(gx), costu(gu) {}
-    ModelCost::ModelCost(MatrixXd (*gx)(const MatrixXd &), MatrixXd (*gu)(const MatrixXd &)):
-        costx(gx), costu(gu) {}
+    ModelCost::ModelCost(const Plant &f, const Cost &gx, const Cost &gu):
+        mvar(f), costx(gx), costu(gu) {}
+
+    ModelCost::ModelCost(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*gx)(const MatrixXd &), MatrixXd (*gu)(const MatrixXd &)):
+        mvar(f), costx(gx), costu(gu) {}
 
     MatrixXd ModelCost::cost(const MatrixXd &x, const MatrixXd &u)
     {
@@ -103,12 +104,38 @@ namespace nap
         return xgradient( x ) + ugradient( u );
     }
 
-    PredictiveCost::PredictiveCost(const Cost &gx, const Cost &gu):
+    PredictiveCost::PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu):
         PredictiveCost(gx, gu, 10, 1) {}
-    PredictiveCost::PredictiveCost(const Cost &gx, const Cost &gu, const int &P):
+
+    PredictiveCost::PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu, const int &P):
         PredictiveCost(gx, gx, P, 1) {}
-    PredictiveCost::PredictiveCost(const Cost &gx, const Cost &gu, const int &P, const int &k):
+
+    PredictiveCost::PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu, const int &P, const int &k):
         ModelCost(gx, gx),
         horz_length(P),
         knot_length(k) {}
+
+    MatrixXd statePrediction(const MatrixXd &xinit, const MatrixXd &ulist)
+    {
+        // Dimensions of simulation.
+        const int N = xinit.rows();
+
+        // Check that ulist is properly dimensioned.
+        if (ulist.cols() != horz_length) {
+            std::cout << "ERROR: 'ulist' is not properly dimensioned." << std::endl;
+            return MatrixXd::Zeros(N, horz_length);
+        }
+
+        // Simulation set and initial conditions.
+        MatrixXd xlist(N,horz_length);
+        xlist.col(0) = xinit;
+
+        // Simulation loop.
+        for (int i(0); i < horz_length-1; ++i) {
+            xlist.col(i+1) = mvar.prop(xlist.col(i), ulist.col(i));
+        }
+
+        // Return simulation set.
+        return xinit;
+    }
 }
