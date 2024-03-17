@@ -27,11 +27,6 @@ namespace nap
         return g;
     }
 
-    MatrixXd minimum(MatrixXd (*dg)(const MatrixXd &), const MatrixXd &xinit)
-    {
-        return xinit;
-    }
-
 // Class: Cost()
     Cost::Cost(MatrixXd (*g)(const MatrixXd &)):
         Cost(g, 1000) {}
@@ -105,6 +100,15 @@ namespace nap
 
     MatrixXd ModelCost::gradient(const MatrixXd &x, const MatrixXd &u)
     {
-        return xgradient( x ) + ugradient( u )
+        return xgradient( x ) + ugradient( u );
     }
+
+    PredictiveCost::PredictiveCost(const Cost &gx, const Cost &gu):
+        PredictiveCost(gx, gu, 10, 1) {}
+    PredictiveCost::PredictiveCost(const Cost &gx, const Cost &gu, const int &P):
+        PredictiveCost(gx, gx, P, 1) {}
+    PredictiveCost::PredictiveCost(const Cost &gx, const Cost &gu, const int &P, const int &k):
+        ModelCost(gx, gx),
+        horz_length(P),
+        knot_length(k) {}
 }

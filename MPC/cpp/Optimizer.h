@@ -56,6 +56,23 @@ namespace nap {
         MatrixXd ugradient(const MatrixXd &u);
         MatrixXd gradient(const MatrixXd &x, const MatrixXd &u);
     };
+
+    class PredictiveCost: public ModelCost
+    {
+    private:
+        // VARIABLES:
+        int horz_length;
+        int knot_length;
+
+    protected:
+    public:
+        // CONSTRUCTORS:
+        PredictiveCost(const Cost &gx, const Cost &gu);
+        PredictiveCost(const Cost &gx, const Cost &gu, const int &P);
+        PredictiveCost(const Cost &gx, const Cost &gu, const int &P, const int &k);
+
+        // MEMBER FUNCTIONS:
+    };
 }
 
 #endif
