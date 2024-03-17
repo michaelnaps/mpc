@@ -25,6 +25,6 @@ int main()
 
     nap::Cost cvar( cost );
     cout << cvar.solve( x ).transpose() << endl;
-    // MatrixXd uinit( 3,10 );  uinit << Eigen::ArrayXXd::Zero(3,10);
-    // cout << mpcvar.solve( x, uinit ) << endl;
+
+    nap::PredictiveCost pcvar( model, cost, cost );
 }

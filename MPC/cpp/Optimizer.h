@@ -1,7 +1,7 @@
 
 #include <iostream>
 #include <Eigen/Dense>
-#include "Plant.cpp"
+#include "Plant.h"
 
 using Eigen::MatrixXd;
 

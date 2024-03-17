@@ -1,13 +1,8 @@
 
+#include "Helpers.h"
 #include "Plant.h"
 
 namespace nap {
-// HELPER FUNCTIONS:
-    MatrixXd TaylorMethod(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), const MatrixXd &x, const MatrixXd &u, const double &dt)
-    {
-        return x + dt*f( x, u );
-    }
-
 // CONSTRUCTORS:
     // Input(s):
     //      f: Model function.
