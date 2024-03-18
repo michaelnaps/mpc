@@ -106,16 +106,16 @@ namespace nap
         // Dimensions of simulation.
         const int N = xinit.rows();
 
-        // Check that ulist is properly dimensioned.
-        try {
-            if (ulist.cols() != horz_length) {
-                throw MatrixXd::Zero(N,horz_length+1);
-            }
-        }
-        catch (MatrixXd xerror) {
-            std::cout << "ERROR: 'ulist' is not properly dimensioned." << std::endl;
-            return xerror;
-        }
+        // // Check that ulist is properly dimensioned.
+        // try {
+        //     if (ulist.cols() != horz_length) {
+        //         throw MatrixXd::Zero(N,horz_length+1);
+        //     }
+        // }
+        // catch (MatrixXd xerror) {
+        //     std::cout << "ERROR: 'ulist' is not properly dimensioned." << std::endl;
+        //     return xerror;
+        // }
 
         // Simulation set and initial conditions.
         MatrixXd xlist(N,horz_length+1);
