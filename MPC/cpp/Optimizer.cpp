@@ -18,7 +18,11 @@ namespace nap
         Cost(g, n, a, h, 1e-6) {}
 
     Cost::Cost(MatrixXd (*g)(const MatrixXd &), const int &n, const double &a, const double &h, const double &e):
-        cost(g), max_iter(n), alpha(a), step_size(h), epsilon(e) {}
+        cost(g),
+        max_iter(n),
+        alpha(a),
+        step_size(h),
+        epsilon(e) {}
 
     MatrixXd Cost::gradient(const MatrixXd &x)
     {
@@ -56,10 +60,14 @@ namespace nap
 
 // Class: ModelCost()
     ModelCost::ModelCost(const Plant &f, const Cost &gx, const Cost &gu):
-        mvar(f), costx(gx), costu(gu) {}
+        mvar(f),
+        costx(gx),
+        costu(gu) {}
 
     ModelCost::ModelCost(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), MatrixXd (*gx)(const MatrixXd &), MatrixXd (*gu)(const MatrixXd &)):
-        mvar(f), costx(gx), costu(gu) {}
+        mvar(f),
+        costx(gx),
+        costu(gu) {}
 
     MatrixXd ModelCost::cost(const MatrixXd &x, const MatrixXd &u)
     {
