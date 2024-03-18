@@ -28,5 +28,5 @@ int main()
 
     MatrixXd ulist = MatrixXd::Random(3,10);
     nap::PredictiveCost pcvar( model, cost, cost, 10 );
-    cout << pcvar.predictionGradient(x, ulist) << endl;
+    cout << pcvar.ugradient(x, ulist) << endl;
 }
