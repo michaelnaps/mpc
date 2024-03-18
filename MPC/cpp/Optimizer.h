@@ -74,8 +74,9 @@ namespace nap {
         PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu, const int &P, const int &k);
 
         // MEMBER FUNCTIONS:
-        MatrixXd statePrediction(const MatrixXd &xinit, const MatrixXd &ulist);
-        MatrixXd costPrediction(const MatrixXd &xinit, const MatrixXd &ulist);
+        MatrixXd predictionState(const MatrixXd &xinit, const MatrixXd &ulist);
+        MatrixXd predictionCost(const MatrixXd &xinit, const MatrixXd &ulist);
+        MatrixXd predictionGradient(const MatrixXd &xinit, const MatrixXd &ulist);
     };
 }
 

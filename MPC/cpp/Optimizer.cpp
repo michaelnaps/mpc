@@ -93,7 +93,7 @@ namespace nap
         horz_length(P),
         knot_length(k) {}
 
-    MatrixXd PredictiveCost::statePrediction(const MatrixXd &xinit, const MatrixXd &ulist)
+    MatrixXd PredictiveCost::predictionState(const MatrixXd &xinit, const MatrixXd &ulist)
     {
         // Dimensions of simulation.
         const int N = xinit.rows();
@@ -117,7 +117,7 @@ namespace nap
         return xlist;
     }
 
-    MatrixXd PredictiveCost::costPrediction(const MatrixXd &xinit, const MatrixXd &ulist)
+    MatrixXd PredictiveCost::predictionCost(const MatrixXd &xinit, const MatrixXd &ulist)
     {
         // Check that ulist is properly dimensioned.
         MatrixXd C(1,1);  C << -1;
@@ -128,7 +128,7 @@ namespace nap
 
         // Get dimension and simulation set.
         const int N = xinit.rows();
-        MatrixXd xlist = statePrediction(xinit, ulist);
+        MatrixXd xlist = predictionState(xinit, ulist);
 
         // Iterate through list summing cost.
         C << 0;
@@ -141,5 +141,28 @@ namespace nap
 
         // Return cumulative cost.
         return C;
+    }
+
+    // TODO: Function is messy. I would like it to be more generalized.
+    MatrixXd PredictiveCost::predictionGradient(const MatrixXd &xinit, const MatrixXd &ulist)
+    {
+        // Initialization of gradient vector.
+        const int M = ulist.rows();
+
+        // Manually calculate gradient vector.
+        MatrixXd up(M,horz_length);  MatrixXd Cp(M,horz_length);
+        MatrixXd un(M,horz_length);  MatrixXd Cn(M,horz_length);
+        for (int i(0); i < M; ++i) {
+            for (int j(0); j < horz_length; ++j) {
+                up = ulist;  up(i,j) = ulist(i,j) + costu.step_size;
+                un = ulist;  un(i,j) = ulist(i,j) - costu.step_size;
+
+                Cp(i,j) = predictionCost(xinit, up)(0,0);
+                Cn(i,j) = predictionCost(xinit, un)(0,0);
+            }
+        }
+
+        // Return gradient (as matrix).
+        return (Cp - Cn)/(2*costu.step_size);
     }
 }
