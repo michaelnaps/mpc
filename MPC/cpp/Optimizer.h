@@ -59,7 +59,7 @@ namespace nap {
         MatrixXd gradient(const MatrixXd &x, const MatrixXd &u);
     };
 
-    class PredictiveCost: public ModelCost
+    class PredictiveCost: protected ModelCost
     {
     private:
         // VARIABLES:
