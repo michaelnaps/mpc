@@ -107,9 +107,14 @@ namespace nap
         const int N = xinit.rows();
 
         // Check that ulist is properly dimensioned.
-        if (ulist.cols() != horz_length) {
+        try {
+            if (ulist.cols() != horz_length) {
+                throw MatrixXd::Zero(N,horz_length+1);
+            }
+        }
+        catch (MatrixXd xerror) {
             std::cout << "ERROR: 'ulist' is not properly dimensioned." << std::endl;
-            return MatrixXd::Zero(N, horz_length+1);
+            return xerror;
         }
 
         // Simulation set and initial conditions.
@@ -125,17 +130,13 @@ namespace nap
         return xlist;
     }
 
-    MatrixXd PredictiveCost::cost(const MatrixXd &xinit, const MatrixXd &ulist)
+    MatrixXd PredictiveCost::pcost(const MatrixXd &xinit, const MatrixXd &ulist)
     {
         // Check that ulist is properly dimensioned.
-        MatrixXd C(1,1);  C << -1;
-        if (ulist.cols() != horz_length) {
-            std::cout << "ERROR: 'ulist' is not properly dimensioned." << std::endl;
-            return C;
-        }
+        MatrixXd C(1,1);
 
         // Get dimension and simulation set.
-        const int N = xinit.rows();
+        const int M = ulist.rows();
         MatrixXd xlist = prediction(xinit, ulist);
 
         // Iterate through list summing cost.
@@ -145,7 +146,7 @@ namespace nap
         }
 
         // Cost of final state (assumed zero input).
-        C += cost(xlist.col(horz_length), MatrixXd::Zero(N,1));
+        C += cost(xlist.col(horz_length), MatrixXd::Zero(M,1));
 
         // Return cumulative cost.
         return C;
@@ -165,8 +166,8 @@ namespace nap
                 up = ulist;  up(i,j) = ulist(i,j) + costu.step_size;
                 un = ulist;  un(i,j) = ulist(i,j) - costu.step_size;
 
-                Cp(i,j) = cost(xinit, up)(0,0);
-                Cn(i,j) = cost(xinit, un)(0,0);
+                Cp(i,j) = pcost(xinit, up)(0,0);
+                Cn(i,j) = pcost(xinit, un)(0,0);
             }
         }
 
