@@ -1,6 +1,5 @@
 
-#include "Plant.cpp"
-#include "Optimizer.cpp"
+#include "MPC.cpp"
 using namespace std;
 
 MatrixXd model(const MatrixXd &x, const MatrixXd &u)
@@ -19,14 +18,14 @@ MatrixXd cost(const MatrixXd &x)
 
 int main()
 {
-    nap::Plant mvar( model );
-    MatrixXd x( 3, 1 );  x << 100, 55, 243;
-    cout << x.transpose() << " -> " << mvar.prop( x, x ).transpose() << endl;
+    // nap::Plant mvar( model );
+    // MatrixXd x( 3, 1 );  x << 100, 55, 243;
+    // cout << x.transpose() << " -> " << mvar.prop( x, x ).transpose() << endl;
 
-    nap::Cost cvar( cost );
-    cout << cvar.solve( x ).transpose() << endl;
+    // nap::Cost cvar( cost );
+    // cout << cvar.solve( x ).transpose() << endl;
 
-    MatrixXd ulist = MatrixXd::Random(3,10);
-    nap::PredictiveCost pcvar( model, cost, cost, 10 );
-    cout << pcvar.ugradient(x, ulist) << endl;
+    // MatrixXd ulist = MatrixXd::Random(3,10);
+    // nap::PredictiveCost pcvar( model, cost, cost, 10 );
+    // cout << pcvar.ugradient(x, ulist) << endl;
 }

@@ -14,9 +14,13 @@ namespace nap {
     public:
         // CONSTRUCTORS:
         MPC(const Plant &f, const Cost &gx, const Cost &gu);
-        PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu, const int &P);
-        PredictiveCost(const Plant &f, const Cost &gx, const Cost &gu, const int &P, const int &k);
-    }
+        MPC(const Plant &f, const Cost &gx, const Cost &gu, const int &P);
+        MPC(const Plant &f, const Cost &gx, const Cost &gu, const int &P, const int &k);
+
+        // MEMBER FUNCTIONS:
+        MatrixXd solve(const MatrixXd &xinit, const MatrixXd &ulist);
+    };
+
 }
 
 #endif

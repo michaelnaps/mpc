@@ -30,11 +30,11 @@ namespace nap
             gn1 = obj( xn1 );
             gp1 = obj( xp1 );
 
-            g.row(i) = (gp1 - gn1)/(2*h);
+            g.row(i) = (gp1 - gn1);
         }
 
         // Return gradient of objective function.
-        return g;
+        return g/(2*h);
     }
 }
 
