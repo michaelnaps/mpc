@@ -1,6 +1,10 @@
 
 #include "Helpers.h"
-#include "Plant.h"
+
+#include <iostream>
+#include <Eigen/Dense>
+
+using Eigen::MatrixXd;
 
 namespace nap {
 // CONSTRUCTORS:
