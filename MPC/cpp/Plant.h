@@ -1,13 +1,11 @@
 
-#include "Plant.cpp"
-
-#include <iostream>
-#include <Eigen/Dense>
-
-using Eigen::MatrixXd;
-
 #ifndef MPC_PLANT
 #define MPC_PLANT
+
+// #include <iostream>
+// #include "Plant.cpp"
+#include <string>
+#include <Eigen/Dense>
 
 namespace nap {
     class Plant
@@ -20,19 +18,19 @@ namespace nap {
 
     protected:
         // PUBLIC VARIABLES:
-        MatrixXd (*model)(const MatrixXd &, const MatrixXd &);
+        Eigen::MatrixXd (*model)(const Eigen::MatrixXd &, const Eigen::MatrixXd &);
 
     public:
         // CONSTRUCTORS:
-        Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &));
-        Plant(MatrixXd (*f)(const MatrixXd &, const MatrixXd &), const std::string &type, const double &dt);
+        Plant(Eigen::MatrixXd (*f)(const Eigen::MatrixXd &, const Eigen::MatrixXd &));
+        Plant(Eigen::MatrixXd (*f)(const Eigen::MatrixXd &, const Eigen::MatrixXd &), const std::string &type, const double &dt);
 
         // ACCESSOR FUNCTIONS:
         std::string getModelType();
         double getTimeStep();
 
         // MEMBER FUNCTIONS:
-        MatrixXd prop(const MatrixXd &x, const MatrixXd &u);
+        Eigen::MatrixXd prop(const Eigen::MatrixXd &x, const Eigen::MatrixXd &u);
     };
 }
 

@@ -1,9 +1,9 @@
 
-#include <Eigen/Dense>
-using Eigen::MatrixXd;
-
 #ifndef MPC_HELPERS
 #define MPC_HELPERS
+
+#include <Eigen/Dense>
+using Eigen::MatrixXd;
 
 namespace nap
 {
