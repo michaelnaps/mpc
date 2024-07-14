@@ -3,7 +3,7 @@ from os.path import expanduser
 sys.path.insert(0, expanduser('~')+'/prog/mpc')
 sys.path.insert(0, expanduser('~')+'/prog/geom')
 
-from Geometry.Circle import *
+from GEOM.Circle import *
 from MPC.Vehicle2D import *
 
 import MPC.Plant as plant
@@ -20,16 +20,16 @@ Nu = 2
 max_iter = 10
 model_type = 'discrete'
 
-def init_sphereworld():
-    wall = Circle( np.array( [[0],[0]] ), -10 )
-    obs1 = Circle( np.array( [[2],[5]] ), 2.5 )
-    obs2 = Circle( np.array( [[-5],[1]] ), 4. )
-    obs3 = Circle( np.array( [[0],[-7]] ), 3. )
+def init_sphereworld(fig, axs):
+    wall = Circle( np.array( [[0],[0]] ), -10, fig=fig, axs=axs )
+    obs1 = Circle( np.array( [[2],[5]] ), 2.5, fig=fig, axs=axs )
+    obs2 = Circle( np.array( [[-5],[1]] ), 4., fig=fig, axs=axs )
+    obs3 = Circle( np.array( [[0],[-7]] ), 3., fig=fig, axs=axs )
 
     return (wall, obs1, obs2, obs3)
 
-sphereworld = init_sphereworld()
-
+fig, axs = plt.subplots()
+sphereworld = init_sphereworld( fig, axs )
 
 # Model and cost function initialization.
 def model(x, u):
@@ -59,7 +59,7 @@ def cost(x, u):
     C += ku*(u[0]**2 + u[1]**2)
 
     # Barrier costs.
-    ko = 50
+    ko = 1
     for sphere in sphereworld:
         C += ko/sphere.distance(x[:2])**2
 
@@ -78,12 +78,11 @@ if __name__ == "__main__":
 
     m_var = plant.Model( model, dt=dt )
 
-    fig, axs = plt.subplots()
     axs.plot( xd[0], xd[1], marker='*', color='g' )
-    for sphere in init_sphereworld():
-        sphere.plot( fig=fig, axs=axs )
-    vhc = Vehicle2D( model, x0[:2], radius=0.2,
-        fig=fig, axs=axs, tail_length=10 )
+    for sphere in init_sphereworld( fig, axs ):
+        sphere.draw()
+    vhc = Vehicle2D( x0[:2], radius=0.2,
+        fig=fig, axs=axs, tail_length=10 ).draw()
     plt.show( block=0 )
 
     T = 15;  Nt = round( T/dt ) + 1
@@ -103,8 +102,8 @@ if __name__ == "__main__":
         #     print( 'x:', xList[:,i+1] )
         #     print( uList[:,i+1] )
         vhc.update( xList[:2,i+1,None] )
-        vhc.draw()
+        # vhc.draw()
 
-    fig, axs = plt.subplots()
-    axs.plot( tList.T, xList.T )
+    fig2, axs2 = plt.subplots()
+    axs2.plot( tList.T, xList.T )
     plt.show()
