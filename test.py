@@ -11,10 +11,12 @@ def modelref(x, u):
     k = -0.3
     c = -1.21
 
+    noise = np.random.normal( 0, 1/2 )
+
     sig = 3/4
     dx = np.array( [
-        x[1] + np.random.normal( 0, sig ),
-        k*x[0] + c*x[1]
+        x[1] + noise,
+        k*x[0] + c*(x[1] + noise)
     ] )
 
     return dx
@@ -44,7 +46,8 @@ def cost(k, params):
 
     # Compute mean and variance.
     mulrn = np.mean( [np.mean( xlearn[0] ) for xlearn in xlearnlist] )
-    return np.array( [(mu - mulrn)**2] )
+    siglrn = np.std( [np.std( xlearn[0] ) for xlearn in xlearnlist] )
+    return np.array( [(mu - mulrn)**2 + (sig - siglrn)**2] )
 
 if __name__ == '__main__':
     # Reference model.
