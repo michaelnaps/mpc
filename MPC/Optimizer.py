@@ -2,10 +2,10 @@ import numpy as np
 from MPC.Plant import *
 # from time import sleep
 
-def fdm2c(g, x, h=1e-6):
+def fdm2c(g, x, params=None, h=1e-6):
     # initialize parameters
     Nx = x.shape[0]        # dimension of input
-    Ng = g(x).shape[0]     # dimension of output
+    Ng = g( x ).shape[0]     # dimension of output
 
     # calculate derivative at each input
     grad = np.empty( (Nx,Ng) )
@@ -21,20 +21,21 @@ def fdm2c(g, x, h=1e-6):
     return grad
 
 class Cost:
-    def __init__(self, g,
+    def __init__(self, g, params=None,
             gradient=None, hessian=None):
         # set cost function
-        self.cost = g
+        self.cost = lambda x: g( x, params )
+        self.params = params
 
         # set gradient function
         if gradient is None:
-            self.grad = lambda x: fdm2c( self.cost, x )
+            self.grad = lambda x: fdm2c( self.cost, x, self.params )
         else:
             self.grad = gradient
 
         # set hessian function
         if hessian is None:
-            self.hess = lambda x: fdm2c( self.grad, x )
+            self.hess = lambda x: fdm2c( self.grad, x, self.params )
         else:
             self.hess = hessian
 
@@ -44,12 +45,12 @@ class Cost:
 #   2). Cost function is scalar with a single state input term.
 #       c = g(x)
 class Optimizer( Cost ):
-    def __init__(self, g, eps=1e-6, solver='ngd'):
+    def __init__(self, g, params=None, eps=1e-6, solver='ngd'):
         # inherit cost function class parameters
-        Cost.__init__( self, g )
+        Cost.__init__( self, g, params )
 
         # tolerance for zero and gradient descent step-size
-        self.max_iter = 10
+        self.max_iter = np.inf
         self.eps = eps  # zero-approximation
         self.alpha = 0.1
 
