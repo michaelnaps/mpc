@@ -10,6 +10,7 @@ class Model:
     def __init__(self, F, params=None, dt=1e-3,
             model_type='discrete'):
         # default to TaylorMethod when given model is continuous
+        self.N = None
         if model_type == 'continuous':
             self.model = lambda x,u=[None]: TaylorMethod( F, x, u, dt )
         else:
@@ -20,6 +21,7 @@ class Model:
         self.params = params
 
     def prop(self, x, u=[None]):
+        # print( self.model( x, 1, 1 ) )
         return self.model( x, u )
 
     def simulate(self, T, x0, params=None, verbose=0):
